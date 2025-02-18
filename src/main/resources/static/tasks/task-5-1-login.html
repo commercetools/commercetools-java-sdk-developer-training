@@ -1,0 +1,156 @@
+<main class="d-flex flex-nowrap">
+    <div class="container py-5">
+        <div class="row h-100">
+            <div class="col-12 col-md-10">
+
+                <h2>Sign In / Sign Up</h2>
+                <br>
+                <div class="accordion" id="loginAccordion">
+
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1" >
+                                A customer should have the option to sign up.
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse show" aria-labelledby="task1" data-bs-parent="#loginAccordion">
+                            <div class="accordion-body">
+                                <span>CUSTOMER SIGNUP - <code>POST /customers</code></span><br/><br/>
+                                <div class="mb-3">
+                                    <label for="customerEmail" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="customerEmail" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="customerPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="customerPassword" name="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="customerKey" class="form-label">Customer Key</label>
+                                    <input type="text" class="form-control" id="customerKey" name="customerKey" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="country" class="form-label">Country</label>
+                                    <input type="text" class="form-control" id="country" name="country" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <button class="btn btn-primary" onclick="signup()">Sign Up</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task2">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" >
+                                A customer should have the option to sign in.
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#loginAccordion">
+                            <div class="accordion-body">
+                                <span>CUSTOMER LOGIN - <code>POST /customers/login</code></span><br/><br/>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Password" />
+                                </div>
+                                <button class="btn btn-primary" onclick="login()">Sign In</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+                <div class="flex-fill d-flex">
+                    <div class="col-12 col-md-10">
+                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+
+    function login() {
+
+        const jsonResponseDiv = document.getElementById('json-response');
+        jsonResponseDiv.textContent = "";
+
+        let cartId = localStorage.getItem('cartId');
+        let formData = {
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+        };
+        if(cartId) {
+            formData.cartId = cartId;
+        }
+
+        fetch('/api/customers/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(handleResponse)
+        .then(data => {
+            console.log('Success:', data);
+            localStorage.setItem('cartId', data.cart.id);
+            jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            jsonResponseDiv.textContent = error.message;
+        });
+    }
+    function signup() {
+
+        const jsonResponseDiv = document.getElementById('json-response');
+        jsonResponseDiv.textContent = '';
+
+        const formData = {
+            email: document.getElementById('customerEmail').value,
+            password: document.getElementById('customerPassword').value,
+            customerKey: document.getElementById('customerKey').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            country: document.getElementById('country').value
+        };
+        let cartId = localStorage.getItem('cartId');
+
+        if(cartId) {
+            formData.anonymousCartId = cartId;
+        }
+        fetch('/api/customers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(handleResponse)
+        .then(data => {
+            console.log('Success:', data);
+            jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            jsonResponseDiv.textContent = error.message;
+        });
+}
+
+</script>

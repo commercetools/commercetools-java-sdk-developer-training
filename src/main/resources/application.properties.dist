@@ -1,0 +1,18 @@
+# ADD API Client below
+
+ctp.projectKey=
+ctp.clientId=
+ctp.clientSecret=
+ctp.authUrl=
+ctp.apiUrl=
+ctp.scopes=
+
+
+# UPDATE Store Key here
+ctp.storeKey=b2c-retail-store
+
+spring.devtools.restart.enabled=true
+spring.jackson.default-property-inclusion=non_null
+server.error.whitelabel.enabled=false
+server.port=8080
+

@@ -1,0 +1,188 @@
+<main class="d-flex flex-nowrap">
+    <div class="container-fluid py-5">
+        <div class="row h-100">
+            <div class="col-12 col-md-10">
+
+                <h2>Browse Products</h2>
+                <br>
+                <div class="accordion" id="productsForm">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="form">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-form" aria-expanded="true" aria-controls="collapse-form" >
+                                Enter details:
+                            </button>
+                        </h2>
+                        <div id="collapse-form" class="accordion-collapse show" aria-labelledby="form" data-bs-parent="#productsForm">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <input type="text" class="form-control mb-2 me-2" id="keyword" placeholder="Enter the search term" />
+                                    <input type="text" class="form-control mb-2 me-2" id="store" placeholder="Select a store" />
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input mb-2" id="includeFacets" />
+                                        <label class="form-check-label" for="includeFacets">Include Facets</label>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="getProducts()">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion" id="productsAccordion">
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1" >
+                                1. A customer wants to search all products using a keyword.
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse show" aria-labelledby="task1" data-bs-parent="#productsAccordion">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span><code>GET /products?keyword=keyword</code></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task2">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                2. We need to display facets like color, finish etc.
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#productsAccordion">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span><code>GET /products?facets=true</code></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task3">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                3. A customer should select a store and see products offered in the store.
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="task3" data-bs-parent="#productsAccordion">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span><code>GET /products?keyword=&storeKey=</code></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+                <div class="flex-fill d-flex">
+                    <div class="container col-md-6">
+                        <h5 class="mb-4">JSON Response</h5>
+                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                    </div>
+                    <div class="container col-md-6">
+                        <strong>Products:</strong>
+                        <div id="results"></div>
+                        <strong>Facets:</strong>
+                        <div id="facets"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function getProducts() {
+        let keyword = document.getElementById('keyword').value.trim();
+        const storeKey = document.getElementById('store').value.trim();
+        const includeFacets = document.getElementById('includeFacets').checked;
+        const jsonResponseDiv = document.getElementById('json-response');
+        const resultsDiv = document.getElementById('results');
+        const facetsDiv = document.getElementById('facets');
+
+        resultsDiv.innerHTML = '';
+        facetsDiv.innerHTML = '';
+        jsonResponseDiv.textContent = '';
+
+        let url = '/api/products?';
+
+        if (keyword) {
+            url += `keyword=${keyword}`;
+        }
+
+        if (storeKey) {
+            url += (url.includes('?') ? '&' : '') + `storeKey=${storeKey}`;
+        }
+
+        if (includeFacets) {
+            url += (url.includes('?') ? '&' : '') + `facets=true`;
+        }
+
+        fetch(url)
+            .then(handleResponse)
+            .then(products => {
+                //display the JSON Response
+                jsonResponseDiv.textContent = JSON.stringify(products, null, 2);
+
+                // display the results
+                console.log(products);
+                if (products.results && products.results.length > 0) {
+                    console.log(products.results);
+                    products.results.forEach(result => {
+                        if(result.productProjection) {
+                            const productDiv = document.createElement('div');
+                            productDiv.classList.add('col-md-4', 'mb-5');
+
+                            productDiv.innerHTML = `
+                                <div class="card">
+                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top" alt="${result.productProjection.name["en-US"]}" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${result.productProjection.name["en-US"]}</h5>
+                                        ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
+                                        ${result.productProjection.masterVariant.price ? `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
+
+                                        ${result.productProjection.variants.length > 0 ? '<h6>Variants:</h6>' : ''}
+                                        ${result.productProjection.variants.map(variant => {
+                                            return `
+                                                <div>
+                                                    ${variant.sku ? `<p><strong>SKU:</strong> ${variant.sku}</p>` : ''}
+                                                    ${variant.price ? `<p><strong>Price:</strong> ${variant.price.value.currencyCode} ${(variant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
+                                                    ${variant.images[0].url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto" style="width: 150px; height: 100px;" />` : ''}
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            `;
+
+                            resultsDiv.appendChild(productDiv);
+                        }
+                    });
+
+                } else {
+                    resultsDiv.innerHTML = 'No products found.';
+                }
+                if (products.facets && products.facets.length > 0) {
+                    products.facets.forEach(facet => {
+                        const facetDiv = document.createElement('div');
+                        facetDiv.classList.add('facet');
+                        facetDiv.innerHTML = `<br/><h3>${facet.name}</h3><br/>`
+                            if (facet.buckets && facet.buckets.length > 0) {
+                                facet.buckets.forEach(bucket => {
+                                    facetDiv.innerHTML += `<p>${bucket.key} ${bucket.count}</p>`;
+                                });
+                            }
+                        facetsDiv.appendChild(facetDiv);
+                    });
+                } else {
+                    facetsDiv.innerHTML = 'No facets.';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                jsonResponseDiv.textContent = error.message;
+            });
+    }
+</script>

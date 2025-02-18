@@ -1,0 +1,163 @@
+<main class="d-flex flex-nowrap">
+    <div class="container py-5">
+        <div class="row h-100">
+            <div class="col-12 col-md-10">
+
+                <h2>Cart</h2>
+                <br>
+                <div class="accordion" id="cartForm">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="form">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-form" aria-expanded="true" aria-controls="collapse-form" >
+                                A customer should see the current cart.
+                            </button>
+                        </h2>
+                        <div id="collapse-form" class="accordion-collapse collapse show" aria-labelledby="form" data-bs-parent="#cartForm">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span><code>GET /carts/cart-id</code></span>
+                                    <button class="btn btn-primary" onclick="getCart()">Get Cart</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion" id="cartAccordion">
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1" >
+                                A customer wants to use a discount coupon.
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="task1" data-bs-parent="#cartAccordion">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
+                                    <input type="text" class="form-control mb-2 me-2" id="code" placeholder="Enter the Discount Code" />
+                                    <button class="btn btn-primary" onclick="updateCart()">Update Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task2">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" >
+                                A customer wants to update the shipping address and choose a shipping method.
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#cartAccordion">
+                            <div class="accordion-body">
+                                <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
+                                <input type="text" class="form-control mb-2 me-2" id="firstName" placeholder="First Name" />
+                                <input type="text" class="form-control mb-2 me-2" id="lastName" placeholder="Last Name" />
+                                <input type="text" class="form-control mb-2 me-2" id="country" placeholder="Country" />
+                                <input type="text" class="form-control mb-2 me-2" id="email" placeholder="Email" />
+                                <input type="checkbox" class="form-check-input mb-2" id="saveAddress" />
+                                <label class="form-check-label" for="saveAddress">Set as default shipping address</label>
+                                <button class="btn btn-primary" onclick="updateShippingAddress()">Update Shipping Address</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+                <div class="flex-fill d-flex">
+                    <div class="container col-6">
+                        <h5 class="mb-4">JSON Response</h5>
+                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+
+    function getCart() {
+        const jsonResponseDiv = document.getElementById('json-response');
+        jsonResponseDiv.textContent = "";
+
+        let cartId = localStorage.getItem('cartId');
+        if (cartId) {
+            let url = '/api/carts';
+            url += `/${cartId}`;
+            fetch(url)
+            .then(handleResponse)
+            .then(cart => {
+                console.log('Success:', cart);
+                jsonResponseDiv.textContent = JSON.stringify(cart, null, 2);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                jsonResponseDiv.textContent = error.message;
+            });
+        }
+    }
+    function updateCart() {
+        let code = document.getElementById('code').value.trim();
+
+        const jsonResponseDiv = document.getElementById('json-response');
+        jsonResponseDiv.textContent = '';
+
+        let cartId = localStorage.getItem('cartId');
+        if (cartId) {
+            const formData = {
+                cartId: cartId,
+                code: code
+            };
+            fetch('/api/carts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log('Success:', data);
+                jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                jsonResponseDiv.textContent = error.message;
+            });
+        }
+}
+
+function updateShippingAddress() {
+
+        const jsonResponseDiv = document.getElementById('json-response');
+        jsonResponseDiv.textContent = '';
+
+        let cartId = localStorage.getItem('cartId');
+        if (cartId) {
+            const formData = {
+                cartId: cartId,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                country: document.getElementById('country').value,
+                email: document.getElementById('email').value
+            };
+            fetch('/api/carts/shipping-address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log('Success:', data);
+                jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                jsonResponseDiv.textContent = error.message;
+            });
+        }
+}
+
+</script>
