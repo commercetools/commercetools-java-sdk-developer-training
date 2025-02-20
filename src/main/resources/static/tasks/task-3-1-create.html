@@ -42,10 +42,10 @@
                         </h2>
                         <div id="collapse1" class="accordion-collapse show" aria-labelledby="task1" data-bs-parent="#productsAccordion">
                             <div class="accordion-body">
-                                <span>FETCH CART - <code>GET /carts/id</code></span><br/><br/>
-                                <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
-                                <button class="btn btn-primary" onclick="getCart()">Get Cart</button><br/><br/>
-                                <button class="btn btn-primary" onclick="clearCart()">Reset Cart</button>
+                                    <span>FETCH CART - <code>GET /carts/id</code></span><br/><br/>
+                                    <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
+                                    <button class="btn btn-primary" onclick="getCart()">Get Cart</button><br/><br/>
+                                    <button class="btn btn-primary" onclick="clearCart()">Reset Cart</button>
                             </div>
                         </div>
                     </div>
@@ -54,13 +54,10 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <h5 class="mb-4">JSON Response</h5>
                     <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
                 </div>
                 <div class="col-md-6">
-                    <strong>Products:</strong>
                     <div id="results"></div>
-                    <strong>Facets:</strong>
                     <div id="facets"></div>
                 </div>
             </div>
@@ -71,11 +68,13 @@
 
 <script>
     function clearCart() {
+        let cartId = localStorage.getItem('cartId');
         localStorage.removeItem('cartId');
         const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = "Cart removed";
+        jsonResponseDiv.textContent = `Cart ${cartId} has been removed from local storage.\nThe cart is not deleted. It can still be fetched by using its id.`;
     }
     function getCart() {
+
         const jsonResponseDiv = document.getElementById('json-response');
         jsonResponseDiv.textContent = '';
 
@@ -100,130 +99,128 @@
     }
 
     function getProducts() {
-    let keyword = document.getElementById('keyword').value.trim();
-    const storeKey = document.getElementById('store').value.trim();
-    const includeFacets = document.getElementById('includeFacets').checked;
-    const jsonResponseDiv = document.getElementById('json-response');
-    const resultsDiv = document.getElementById('results');
-    const facetsDiv = document.getElementById('facets');
+        let keyword = document.getElementById('keyword').value.trim();
+        const storeKey = document.getElementById('store').value.trim();
+        const includeFacets = document.getElementById('includeFacets').checked;
+        const jsonResponseDiv = document.getElementById('json-response');
+        const resultsDiv = document.getElementById('results');
+        const facetsDiv = document.getElementById('facets');
 
-    resultsDiv.innerHTML = '';
-    facetsDiv.innerHTML = '';
-    jsonResponseDiv.textContent = '';
+        resultsDiv.innerHTML = '';
+        facetsDiv.innerHTML = '';
+        jsonResponseDiv.textContent = '';
 
-    let url = '/api/products?';
+        let url = '/api/products?';
 
-    if (keyword) {
-        url += `keyword=${keyword}`;
-    }
+        if (keyword) {
+            url += `keyword=${keyword}`;
+        }
 
-    if (storeKey) {
-        url += (url.includes('?') ? '&' : '') + `storeKey=${storeKey}`;
-    }
+        if (storeKey) {
+            url += (url.includes('?') ? '&' : '') + `storeKey=${storeKey}`;
+        }
 
-    if (includeFacets) {
-        url += (url.includes('?') ? '&' : '') + `facets=true`;
-    }
+        if (includeFacets) {
+            url += (url.includes('?') ? '&' : '') + `facets=true`;
+        }
 
-    fetch(url)
-        .then(handleResponse)
-        .then(products => {
+        fetch(url)
+            .then(handleResponse)
+            .then(products => {
+                jsonResponseDiv.textContent = JSON.stringify(products, null, 2);
 
-            jsonResponseDiv.textContent = JSON.stringify(products, null, 2);
+                console.log(products);
+                if (products.results && products.results.length > 0) {
+                    console.log(products.results);
+                    products.results.forEach(result => {
+                        if(result.productProjection) {
+                            const productDiv = document.createElement('div');
+                            productDiv.classList.add('col-md-6', 'mb-5');
+                            productDiv.innerHTML = `
+                                <div class="card">
+                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top" alt="${result.productProjection.name['en-US']}" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${result.productProjection.name['en-US']}</h5>
+                                        ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
 
-            console.log(products);
-            if (products.results && products.results.length > 0) {
-                console.log(products.results);
-                products.results.forEach(result => {
+                                        ${result.productProjection.masterVariant.price ?
+                                            `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''
+                                        }
 
-                    if(result.productProjection) {
-                        const productDiv = document.createElement('div');
-                        productDiv.classList.add('col-md-4', 'mb-5');
-                        productDiv.innerHTML = `
-                            <div class="card">
-                                <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top" alt="${result.productProjection.name['en-US']}" style="height: 200px; object-fit: cover;">
-                                <div class="card-body">
-                                    <h5 class="card-title">${result.productProjection.name['en-US']}</h5>
-                                    ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
-
-                                    ${result.productProjection.masterVariant.price ?
-                                        `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''
-                                    }
-
-                                    <div class="mb-3">
-                                        <button type="button" class="btn btn-primary w-100 add-to-cart">Add to Cart</button>
+                                        <div class="mb-3">
+                                            <button type="button" class="btn btn-primary w-100 add-to-cart">Add to Cart</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
 
 
-                        resultsDiv.appendChild(productDiv);
+                            resultsDiv.appendChild(productDiv);
 
-                        const addToCartButton = productDiv.querySelector('.add-to-cart');
-                        if (addToCartButton) {
-                            addToCartButton.addEventListener('click', function() {
-                                let cartId = localStorage.getItem('cartId');
-                                const formData = {
-                                    sku: result.productProjection.masterVariant.sku,
-                                    quantity: 1
-                                };
+                            const addToCartButton = productDiv.querySelector('.add-to-cart');
+                            if (addToCartButton) {
+                                addToCartButton.addEventListener('click', function() {
+                                    let cartId = localStorage.getItem('cartId');
+                                    const formData = {
+                                        sku: result.productProjection.masterVariant.sku,
+                                        quantity: 1
+                                    };
 
-                                if (cartId) {
-                                    formData.cartId = cartId;
-                                }
-
-                                fetch('/api/carts', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(formData)
-                                })
-                                .then(handleResponse)
-                                .then(data => {
-                                    console.log('Success:', data);
-                                    jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-                                    cartId = data.id;
                                     if (cartId) {
-                                        localStorage.setItem('cartId', cartId);
-                                    } else {
-                                        alert('Failed to retrieve Cart ID.');
+                                        formData.cartId = cartId;
                                     }
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                    jsonResponseDiv.textContent = error.message;
+
+                                    fetch('/api/carts', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(formData)
+                                    })
+                                    .then(handleResponse)
+                                    .then(data => {
+                                        console.log('Success:', data);
+                                        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                                        cartId = data.id;
+                                        if (cartId) {
+                                            localStorage.setItem('cartId', cartId);
+                                        } else {
+                                            alert('Failed to retrieve Cart ID.');
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error:', error);
+                                        jsonResponseDiv.textContent = error.message;
+                                    });
                                 });
+                            }
+                        }
+                    });
+
+                } else {
+                    resultsDiv.innerHTML = 'No products found.';
+                }
+
+                if (products.facets && products.facets.length > 0) {
+                    products.facets.forEach(facet => {
+                        const facetDiv = document.createElement('div');
+                        facetDiv.classList.add('facet');
+                        facetDiv.innerHTML = `<br/><h3>${facet.name}</h3><br/>`;
+                        if (facet.buckets && facet.buckets.length > 0) {
+                            facet.buckets.forEach(bucket => {
+                                facetDiv.innerHTML += `<p>${bucket.key} ${bucket.count}</p>`;
                             });
                         }
-                    }
-                });
-
-            } else {
-                resultsDiv.innerHTML = 'No products found.';
-            }
-
-            if (products.facets && products.facets.length > 0) {
-                products.facets.forEach(facet => {
-                    const facetDiv = document.createElement('div');
-                    facetDiv.classList.add('facet');
-                    facetDiv.innerHTML = `<br/><h3>${facet.name}</h3><br/>`;
-                    if (facet.buckets && facet.buckets.length > 0) {
-                        facet.buckets.forEach(bucket => {
-                            facetDiv.innerHTML += `<p>${bucket.key} ${bucket.count}</p>`;
-                        });
-                    }
-                    facetsDiv.appendChild(facetDiv);
-                });
-            } else {
-                facetsDiv.innerHTML = 'No facets.';
-            }
-        })
-        .catch(error => {
-            jsonResponseDiv.textContent = error.message;
-            console.error('Error getting products:', error);
-        });
+                        facetsDiv.appendChild(facetDiv);
+                    });
+                } else {
+                    facetsDiv.innerHTML = 'No facets.';
+                }
+            })
+            .catch(error => {
+                jsonResponseDiv.textContent = error.message;
+                console.error('Error getting products:', error);
+            });
 }
 
 </script>

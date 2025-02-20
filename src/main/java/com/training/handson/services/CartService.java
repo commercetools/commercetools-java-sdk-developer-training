@@ -36,46 +36,6 @@ public class CartService {
                     .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> createCustomerCart(
-            final ApiHttpResponse<Customer> customerApiHttpResponse,
-            final ApiHttpResponse<Store> storeApiHttpResponse,
-            final String sku,
-            final Long quantity,
-            final String supplyChannelKey,
-            final String distChannelKey) {
-
-        final Customer customer = customerApiHttpResponse.getBody();
-        final String countryCode = storeApiHttpResponse.getBody().getCountries().get(0).getCode();
-        String currencyCode = getCurrencyCodeByCountry(countryCode);
-
-        return
-            apiRoot
-                .inStore(storeKey)
-                .carts()
-                .post(
-                    cartDraftBuilder -> cartDraftBuilder
-                        .currency(currencyCode)
-                        .deleteDaysAfterLastModification(90L)
-                        .customerEmail(customer.getEmail())
-                        .customerId(customer.getId())
-                        .country(countryCode)
-                        .shippingAddress(customer.getAddresses().stream()
-                            .filter(address -> address.getId().equals(customer.getDefaultShippingAddressId()))
-                            .findFirst()
-                            .orElse(null))
-                        .addLineItems(lineItemDraftBuilder -> lineItemDraftBuilder
-                                .sku(sku)
-                                .supplyChannel(channelResourceIdentifierBuilder ->
-                                        channelResourceIdentifierBuilder.key(supplyChannelKey))
-                                .distributionChannel(channelResourceIdentifierBuilder ->
-                                        channelResourceIdentifierBuilder.key(distChannelKey))
-                                .quantity(quantity)
-                                .build())
-                        .inventoryMode(InventoryMode.NONE)
-                )
-                .execute();
-    }
-
     public CompletableFuture<ApiHttpResponse<Cart>> createAnonymousCart(
             final String sku,
             final Long quantity
@@ -108,6 +68,46 @@ public class CartService {
                                 )
                                 .execute();
                 });
+    }
+
+    public CompletableFuture<ApiHttpResponse<Cart>> createCustomerCart(
+            final ApiHttpResponse<Customer> customerApiHttpResponse,
+            final ApiHttpResponse<Store> storeApiHttpResponse,
+            final String sku,
+            final Long quantity,
+            final String supplyChannelKey,
+            final String distChannelKey) {
+
+        final Customer customer = customerApiHttpResponse.getBody();
+        final String countryCode = storeApiHttpResponse.getBody().getCountries().get(0).getCode();
+        String currencyCode = getCurrencyCodeByCountry(countryCode);
+
+        return
+                apiRoot
+                        .inStore(storeKey)
+                        .carts()
+                        .post(
+                                cartDraftBuilder -> cartDraftBuilder
+                                        .currency(currencyCode)
+                                        .deleteDaysAfterLastModification(90L)
+                                        .customerEmail(customer.getEmail())
+                                        .customerId(customer.getId())
+                                        .country(countryCode)
+                                        .shippingAddress(customer.getAddresses().stream()
+                                                .filter(address -> address.getId().equals(customer.getDefaultShippingAddressId()))
+                                                .findFirst()
+                                                .orElse(null))
+                                        .addLineItems(lineItemDraftBuilder -> lineItemDraftBuilder
+                                                .sku(sku)
+                                                .supplyChannel(channelResourceIdentifierBuilder ->
+                                                        channelResourceIdentifierBuilder.key(supplyChannelKey))
+                                                .distributionChannel(channelResourceIdentifierBuilder ->
+                                                        channelResourceIdentifierBuilder.key(distChannelKey))
+                                                .quantity(quantity)
+                                                .build())
+                                        .inventoryMode(InventoryMode.NONE)
+                        )
+                        .execute();
     }
 
     private String getCurrencyCodeByCountry(final String countryCode){
@@ -267,7 +267,7 @@ public class CartService {
                         .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> setShipping(final ApiHttpResponse<Cart> cartApiHttpResponse) {
+    public CompletableFuture<ApiHttpResponse<Cart>> setShippingMethod(final ApiHttpResponse<Cart> cartApiHttpResponse) {
 
         final Cart cart = cartApiHttpResponse.getBody();
 

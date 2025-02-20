@@ -78,13 +78,10 @@
                 <br/>
                 <div class="flex-fill d-flex">
                     <div class="container col-md-6">
-                        <h5 class="mb-4">JSON Response</h5>
                         <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
                     </div>
                     <div class="container col-md-6">
-                        <strong>Products:</strong>
                         <div id="results"></div>
-                        <strong>Facets:</strong>
                         <div id="facets"></div>
                     </div>
                 </div>
@@ -133,23 +130,24 @@
                     products.results.forEach(result => {
                         if(result.productProjection) {
                             const productDiv = document.createElement('div');
-                            productDiv.classList.add('col-md-4', 'mb-5');
+                            productDiv.classList.add('col-md-6', 'mb-5');
 
                             productDiv.innerHTML = `
                                 <div class="card">
-                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top" alt="${result.productProjection.name["en-US"]}" style="height: 200px; object-fit: cover;">
+                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="${result.productProjection.name["en-US"]}">
                                     <div class="card-body">
                                         <h5 class="card-title">${result.productProjection.name["en-US"]}</h5>
                                         ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
                                         ${result.productProjection.masterVariant.price ? `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
 
-                                        ${result.productProjection.variants.length > 0 ? '<h6>Variants:</h6>' : ''}
+                                        ${result.productProjection.variants.length > 0 ? '<h4>Variants:</h4>' : ''}
                                         ${result.productProjection.variants.map(variant => {
                                             return `
                                                 <div>
-                                                    ${variant.sku ? `<p><strong>SKU:</strong> ${variant.sku}</p>` : ''}
-                                                    ${variant.price ? `<p><strong>Price:</strong> ${variant.price.value.currencyCode} ${(variant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
-                                                    ${variant.images[0].url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto" style="width: 150px; height: 100px;" />` : ''}
+                                                    ${variant.sku ? `<p><strong>SKU: ${variant.sku}</strong></p>` : ''}
+                                                    ${variant.images[0].url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto mb-2" style="width: 100px; height: 100px;" />` : ''}
+                                                    ${variant.price ? `<p class="text-center"><strong>Price:</strong> ${variant.price.value.currencyCode} ${(variant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
+
                                                 </div>
                                             `;
                                         }).join('')}

@@ -15,7 +15,7 @@
                         <div id="collapse-form" class="accordion-collapse collapse show" aria-labelledby="form" data-bs-parent="#cartForm">
                             <div class="accordion-body">
                                 <div class="d-flex justify-content-between">
-                                    <span><code>GET /carts/cart-id</code></span>
+                                    <span><code>GET /carts/id</code></span>
                                     <button class="btn btn-primary" onclick="getCart()">Get Cart</button>
 
                                 </div>
@@ -33,8 +33,8 @@
                         </h2>
                         <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="task1" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
+                                <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
                                 <div class="d-flex justify-content-between">
-                                    <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
                                     <input type="text" class="form-control mb-2 me-2" id="code" placeholder="Enter the Discount Code" />
                                     <button class="btn btn-primary" onclick="updateCart()">Update Cart</button>
                                 </div>
@@ -65,7 +65,6 @@
                 <br/>
                 <div class="flex-fill d-flex">
                     <div class="container col-6">
-                        <h5 class="mb-4">JSON Response</h5>
                         <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
                     </div>
                 </div>
@@ -81,8 +80,9 @@
         jsonResponseDiv.textContent = "";
 
         let cartId = localStorage.getItem('cartId');
+        let url = '/api/carts';
+
         if (cartId) {
-            let url = '/api/carts';
             url += `/${cartId}`;
             fetch(url)
             .then(handleResponse)
@@ -94,6 +94,9 @@
                 console.error('Error:', error);
                 jsonResponseDiv.textContent = error.message;
             });
+        }
+        else {
+                jsonResponseDiv.textContent = 'No current active cart';
         }
     }
     function updateCart() {
@@ -125,6 +128,9 @@
                 jsonResponseDiv.textContent = error.message;
             });
         }
+        else {
+                jsonResponseDiv.textContent = 'No current active cart';
+        }
 }
 
 function updateShippingAddress() {
@@ -139,7 +145,7 @@ function updateShippingAddress() {
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
                 country: document.getElementById('country').value,
-                email: document.getElementById('email').value
+                email: document.getElementById('email').value,
             };
             fetch('/api/carts/shipping-address', {
                     method: 'POST',
@@ -157,6 +163,9 @@ function updateShippingAddress() {
                 console.error('Error:', error);
                 jsonResponseDiv.textContent = error.message;
             });
+        }
+        else {
+                jsonResponseDiv.textContent = 'No current active cart';
         }
 }
 

@@ -9,7 +9,6 @@ function handleResponse(response) {
         }
     if (!response.ok) {
         return response.json().then(error => {
-            alert(response.status);
             throw new Error(error.message);
         });
     }

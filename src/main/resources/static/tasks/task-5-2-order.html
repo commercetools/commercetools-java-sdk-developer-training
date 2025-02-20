@@ -1,5 +1,5 @@
 <main class="d-flex flex-nowrap">
-    <div class="container py-5">
+    <div class="container-fluid py-5">
         <div class="row h-100">
             <div class="col-12 col-md-10">
 
@@ -97,6 +97,7 @@
                 document.getElementById('customer-email').innerText = cartData.customerEmail;
 
                 const itemsList = document.getElementById('cart-items');
+                itemsList.innerHTML = '';
                 cartData.lineItems.forEach(item => {
                     const card = document.createElement('div');
                     card.classList.add('col-12', 'col-md-10');
