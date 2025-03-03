@@ -19,6 +19,9 @@ public class CartService {
     @Autowired
     private String storeKey;
 
+    @Autowired
+    private StoreService storeService;
+
     public CompletableFuture<ApiHttpResponse<Cart>> getCartById(final String cartId) {
 
             return apiRoot

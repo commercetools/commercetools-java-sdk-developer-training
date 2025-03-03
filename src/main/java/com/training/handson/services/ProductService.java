@@ -85,14 +85,17 @@ public class ProductService {
     }
 
     private SearchQuery createFullTextQuery(String keyword) {
+        // TODO: Implement to enable keyword search
         throw new NotImplementedException("This method is not implemented yet.");
     }
 
     private SearchQuery createStoreQuery(String storeId) {
+        // TODO: Implement to enable store-specific search
         throw new NotImplementedException("This method is not implemented yet.");
     }
 
     private ProductSearchProjectionParams createProductProjectionParams(String storeKey) {
+        // TODO: Implement to enable storeProjections
         throw new NotImplementedException("This method is not implemented yet.");
     }
 
