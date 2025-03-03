@@ -19,6 +19,9 @@ public class OrderService {
     @Autowired
     private String storeKey;
 
+    @Autowired
+    private CustomerService customerService;
+
     public CompletableFuture<ApiHttpResponse<Order>> createOrder(
             final OrderRequest orderRequest) {
 

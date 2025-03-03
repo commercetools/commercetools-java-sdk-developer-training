@@ -93,13 +93,23 @@ public class CustomizationService {
 
         // Create a new Custom Object with container and key values from the request
         Map<String, Object> jsonObject = new HashMap<>();
+        final String container = customObjectRequest.getContainer();
+        final String key = customObjectRequest.getKey();
 
-        return apiRoot.customObjects()
-                .post(customObjectDraftBuilder -> customObjectDraftBuilder
-                        .container(customObjectRequest.getContainer())
-                        .key(customObjectRequest.getKey())
-                        .value(jsonObject))
-                .execute();
+        return getCustomObjectWithContainerAndKey(container, key)
+                .handle((customObjectApiHttpResponse, throwable) -> {
+                    if (throwable != null){
+                        return apiRoot.customObjects()
+                                .post(customObjectDraftBuilder -> customObjectDraftBuilder
+                                        .container(customObjectRequest.getContainer())
+                                        .key(customObjectRequest.getKey())
+                                        .value(jsonObject))
+                                .execute();
+                    }
+                    else {
+                        return CompletableFuture.completedFuture(customObjectApiHttpResponse);
+                    }
+                }).thenCompose(apiHttpResponseCompletableFuture -> apiHttpResponseCompletableFuture);
     }
 
     public CompletableFuture<ApiHttpResponse<CustomObject>> getCustomObjectWithContainerAndKey(

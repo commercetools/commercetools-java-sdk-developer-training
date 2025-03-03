@@ -1,7 +1,7 @@
-<main class="d-flex flex-nowrap">
-    <div class="container-fluid py-5">
+
+    <div class="container my-5">
         <div class="row h-100">
-            <div class="col-md-12">
+            <div class="col-md-9">
 
                 <h2>GET/QUERY Shipping Methods</h2>
                 <br>
@@ -79,18 +79,22 @@
                 </div>
 
                 <br/>
-                <div class="d-flex">
-                    <div class="container col-md-6">
-                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                <main class="d-flex flex-nowrap">
+                    <div class="row h-100 w-100">
+                        <div class="d-flex col-md-12">
+                            <div class="container col-md-8">
+                                <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            </div>
+                            <div class="container col-md-4">
+                                <div id="results"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="container col-md-6">
-                        <div id="results"></div>
-                    </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
-</main>
+
 
 <script>
     function getShippingMethods() {
@@ -111,7 +115,7 @@
                         console.log(shippingMethods);
                         shippingMethods.results.forEach(shippingMethod => {
                             const card = document.createElement('div');
-                            card.classList.add('col-md-6', 'mb-5');
+                            card.classList.add('col-md-12', 'mb-5');
 
                             card.innerHTML = `
                                 <div class="card">
@@ -164,7 +168,7 @@
                     console.log(shippingMethod);
                     if (shippingMethod) {
                         const card = document.createElement('div');
-                            card.classList.add('col-md-6', 'mb-5');
+                            card.classList.add('col-md-12', 'mb-5');
 
                             card.innerHTML = `
                                 <div class="card">
@@ -198,6 +202,63 @@
         }
     }
 
+    function getShippingMethodsByCountry() {
+        const countryCode = document.getElementById('countryCode').value.trim();
+        const jsonResponseDiv = document.getElementById('json-response');
+        const resultsDiv = document.getElementById('results');
+
+        resultsDiv.innerHTML = '';
+        jsonResponseDiv.textContent = '';
+
+        if (!countryCode) {
+                resultsDiv.innerHTML = 'Enter a country to get shipping options.';
+                return;
+        }
+        else {
+            const url = `/api/shippingmethods?countryCode=${countryCode}`;
+            fetch(url)
+                .then(handleResponse)
+                .then(shippingMethods => {
+
+                    jsonResponseDiv.textContent = JSON.stringify(shippingMethods, null, 2);
+
+                    if (shippingMethods.results && shippingMethods.results.length > 0) {
+                        console.log(shippingMethods);
+                        shippingMethods.results.forEach(shippingMethod => {
+
+                            const card = document.createElement('div');
+                            card.classList.add('col-md-12', 'mb-5');
+
+                            card.innerHTML = `
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${shippingMethod.name}</h5>
+                                        <p class="card-text">`;
+                                        if (shippingMethod.zoneRates && shippingMethod.zoneRates.length > 0) {
+                                            shippingMethod.zoneRates.forEach(zoneRate => {
+                                                card.innerHTML += zoneRate.zone.obj ? `<h4>${zoneRate.zone.obj.name}</h4>`:`<h4>${zoneRate.zone.id}</h4>`;
+                                                zoneRate.shippingRates.forEach(shippingRate => {
+                                                        card.innerHTML += `<p>${shippingRate.price.currencyCode} ${shippingRate.price.centAmount}</p>`;
+                                                });
+                                            });
+                                        }
+                                        card.innerHTML += `</p>
+                                    </div>
+                                </div>
+                            `;
+                            resultsDiv.appendChild(card);
+
+                        });
+                    } else {
+                        resultsDiv.innerHTML = 'No shipping methods found.';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+        }
+    }
     function checkShippingMethodExistence() {
         const key = document.getElementById('keyToCheck').value.trim();
         const jsonResponseDiv = document.getElementById('json-response');
@@ -231,64 +292,6 @@
                             console.error('Error:', error);
                             jsonResponseDiv.textContent = error.message;
                         });
-        }
-    }
-
-    function getShippingMethodsByCountry() {
-        const countryCode = document.getElementById('countryCode').value.trim();
-        const jsonResponseDiv = document.getElementById('json-response');
-        const resultsDiv = document.getElementById('results');
-
-        resultsDiv.innerHTML = '';
-        jsonResponseDiv.textContent = '';
-
-        if (!countryCode) {
-                resultsDiv.innerHTML = 'Enter a country to get shipping options.';
-                return;
-        }
-        else {
-            const url = `/api/shippingmethods?countryCode=${countryCode}`;
-            fetch(url)
-                .then(handleResponse)
-                .then(shippingMethods => {
-
-                    jsonResponseDiv.textContent = JSON.stringify(shippingMethods, null, 2);
-
-                    if (shippingMethods.results && shippingMethods.results.length > 0) {
-                        console.log(shippingMethods);
-                        shippingMethods.results.forEach(shippingMethod => {
-
-                            const card = document.createElement('div');
-                            card.classList.add('col-md-6', 'mb-5');
-
-                            card.innerHTML = `
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${shippingMethod.name}</h5>
-                                        <p class="card-text">`;
-                                        if (shippingMethod.zoneRates && shippingMethod.zoneRates.length > 0) {
-                                            shippingMethod.zoneRates.forEach(zoneRate => {
-                                                card.innerHTML += zoneRate.zone.obj ? `<h4>${zoneRate.zone.obj.name}</h4>`:`<h4>${zoneRate.zone.id}</h4>`;
-                                                zoneRate.shippingRates.forEach(shippingRate => {
-                                                        card.innerHTML += `<p>${shippingRate.price.currencyCode} ${shippingRate.price.centAmount}</p>`;
-                                                });
-                                            });
-                                        }
-                                        card.innerHTML += `</p>
-                                    </div>
-                                </div>
-                            `;
-                            resultsDiv.appendChild(card);
-
-                        });
-                    } else {
-                        resultsDiv.innerHTML = 'No shipping methods found.';
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    jsonResponseDiv.textContent = error.message;
-                });
         }
     }
 </script>

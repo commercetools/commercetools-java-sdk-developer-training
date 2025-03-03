@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static io.vrap.rmf.base.client.http.HttpStatusCode.*;
+
 @Configuration
 public class Config {
 
@@ -42,7 +44,7 @@ public class Config {
                 )
                 .withPolicies(policyBuilder ->
                         policyBuilder.withRetry(retryPolicyBuilder ->
-                                retryPolicyBuilder.maxRetries(3).statusCodes(Arrays.asList(502, 503, 504))))
+                                retryPolicyBuilder.maxRetries(3).statusCodes(Arrays.asList(BAD_GATEWAY_502, SERVICE_UNAVAILABLE_503, GATEWAY_TIMEOUT_504))))
                 .withErrorMiddleware(ErrorMiddleware.ExceptionMode.UNWRAP_COMPLETION_EXCEPTION)
                 .addConcurrentModificationMiddleware(2)
                 .addCorrelationIdProvider(() -> projectKey + "/" + UUID.randomUUID())
