@@ -1,18 +1,18 @@
-<main class="d-flex flex-nowrap">
+
     <div class="container py-5">
         <div class="row h-100">
-            <div class="col-12 col-md-10">
+            <div class="col-md-9">
 
                 <h2>Cart</h2>
                 <br>
-                <div class="accordion" id="cartForm">
+                <div class="accordion" id="cartAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="form">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-form" aria-expanded="true" aria-controls="collapse-form" >
                                 A customer should see the current cart.
                             </button>
                         </h2>
-                        <div id="collapse-form" class="accordion-collapse collapse show" aria-labelledby="form" data-bs-parent="#cartForm">
+                        <div id="collapse-form" class="accordion-collapse show" aria-labelledby="form" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
                                 <div class="d-flex justify-content-between">
                                     <span><code>GET /carts/id</code></span>
@@ -22,9 +22,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="accordion" id="cartAccordion">
-
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="task1">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1" >
@@ -34,10 +31,11 @@
                         <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="task1" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
                                 <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
-                                <div class="d-flex justify-content-between">
-                                    <input type="text" class="form-control mb-2 me-2" id="code" placeholder="Enter the Discount Code" />
-                                    <button class="btn btn-primary" onclick="updateCart()">Update Cart</button>
+                                <div class="mb-3">
+                                    <label for="code" class="form-label">Discount Code</label>
+                                    <input type="text" class="form-control mb-2 me-2" id="code" />
                                 </div>
+                                <button class="btn btn-primary" onclick="updateCart()">Update Cart</button>
                             </div>
                         </div>
                     </div>
@@ -50,28 +48,46 @@
                         <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
                                 <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
-                                <input type="text" class="form-control mb-2 me-2" id="firstName" placeholder="First Name" />
-                                <input type="text" class="form-control mb-2 me-2" id="lastName" placeholder="Last Name" />
-                                <input type="text" class="form-control mb-2 me-2" id="country" placeholder="Country" />
-                                <input type="text" class="form-control mb-2 me-2" id="email" placeholder="Email" />
-                                <input type="checkbox" class="form-check-input mb-2" id="saveAddress" />
-                                <label class="form-check-label" for="saveAddress">Set as default shipping address</label>
-                                <button class="btn btn-primary" onclick="updateShippingAddress()">Update Shipping Address</button>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <div>
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control mb-2 me-2" id="firstName" />
+                                    </div>
+                                    <div>
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control mb-2 me-2" id="lastName" />
+                                    </div>
+                                    <div>
+                                        <label for="country" class="form-label">Country</label>
+                                        <input type="text" class="form-control mb-2 me-2" id="country" />
+                                    </div>
+                                    <div>
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="text" class="form-control mb-2 me-2" id="email" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="checkbox" class="form-check-input mb-2" id="saveAddress" />
+                                        <label class="form-check-label" for="saveAddress">Set as default shipping address</label>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="updateShippingAddress()">Update Shipping Address</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <br/>
-                <div class="flex-fill d-flex">
-                    <div class="container col-6">
-                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                <main class="d-flex flex-nowrap">
+                    <div class="row h-100">
+                        <div class="d-flex col-md-12">
+                            <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                        </div>
                     </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
-</main>
+
 
 <script>
 

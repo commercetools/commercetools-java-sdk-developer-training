@@ -129,7 +129,7 @@ public class ProductService {
 
     private SearchQuery createStoreQuery(String storeId) {
         return SearchExactExpressionBuilder.of()
-                .exact(SearchAnyValueBuilder.of()
+                .exact(SearchExactValueBuilder.of()
                         .field("stores")
                         .value(storeId)
                         .fieldType(SearchFieldType.SET_REFERENCE)

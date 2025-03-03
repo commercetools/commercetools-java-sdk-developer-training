@@ -1,7 +1,7 @@
-<main class="d-flex flex-nowrap">
-    <div class="container-fluid py-5">
+
+    <div class="container py-5">
         <div class="row h-100">
-            <div class="col-12 col-md-10">
+            <div class="col-md-9">
 
                 <h2>Browse Products</h2>
                 <br>
@@ -9,21 +9,30 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="form">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-form" aria-expanded="true" aria-controls="collapse-form" >
-                                Enter details:
+                                Search Products:
                             </button>
                         </h2>
                         <div id="collapse-form" class="accordion-collapse show" aria-labelledby="form" data-bs-parent="#productsForm">
                             <div class="accordion-body">
-                                <div class="d-flex justify-content-between">
-                                    <input type="text" class="form-control mb-2 me-2" id="keyword" placeholder="Enter the search term" />
-                                    <input type="text" class="form-control mb-2 me-2" id="store" placeholder="Select a store" />
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <div class="form-check form-switch">
-                                        <input type="checkbox" class="form-check-input mb-2" id="includeFacets" />
-                                        <label class="form-check-label" for="includeFacets">Include Facets</label>
+                                <div class="d-flex flex-column justify-content-between">
+                                    <div>
+                                        <label for="keyword" class="form-label">Search Keyword</label>
+                                        <input type="text" class="form-control mb-4" id="keyword" />
                                     </div>
-                                    <button class="btn btn-primary" onclick="getProducts()">Search</button>
+                                    <div>
+                                        <label for="store" class="form-label">Store</label>
+                                        <select class="form-control mb-4" id="store">
+                                            <option value="" selected disabled>Select a store</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex">
+                                        <input type="checkbox" class="form-check-input mb-4" id="includeFacets" />
+                                        <label class="form-check-label mb-4" for="includeFacets"> Include Facets</label>
+                                    </div>
+
+                                    <div>
+                                        <button class="btn btn-primary btn-lg" onclick="getProducts()">Search</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -76,21 +85,42 @@
                 </div>
 
                 <br/>
-                <div class="flex-fill d-flex">
-                    <div class="container col-md-6">
-                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                <main class="d-flex flex-nowrap">
+                    <div class="row h-100 w-100">
+                        <div class="d-flex col-md-12">
+                            <div class="container col-md-8">
+                                <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            </div>
+                            <div class="container col-md-4">
+                                <div id="results"></div>
+                                <div id="facets"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="container col-md-6">
-                        <div id="results"></div>
-                        <div id="facets"></div>
-                    </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
-</main>
 
 <script>
+    storeDropdown = document.getElementById('store');
+
+    function displayStores(event) {
+        let storesList = localStorage.getItem('storesList');
+
+        if (storesList){
+            const stores = JSON.parse(storesList);
+            for (const [key, name] of Object.entries(stores)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = name;
+                event.target.appendChild(option);
+            }
+        }
+    }
+
+    storeDropdown.addEventListener('focus', displayStores, { once: true });
+
     function getProducts() {
         let keyword = document.getElementById('keyword').value.trim();
         const storeKey = document.getElementById('store').value.trim();
@@ -130,7 +160,7 @@
                     products.results.forEach(result => {
                         if(result.productProjection) {
                             const productDiv = document.createElement('div');
-                            productDiv.classList.add('col-md-6', 'mb-5');
+                            productDiv.classList.add('col-md-12', 'mb-5');
 
                             productDiv.innerHTML = `
                                 <div class="card">
@@ -165,7 +195,6 @@
                 if (products.facets && products.facets.length > 0) {
                     products.facets.forEach(facet => {
                         const facetDiv = document.createElement('div');
-                        facetDiv.classList.add('facet');
                         facetDiv.innerHTML = `<br/><h3>${facet.name}</h3><br/>`
                             if (facet.buckets && facet.buckets.length > 0) {
                                 facet.buckets.forEach(bucket => {

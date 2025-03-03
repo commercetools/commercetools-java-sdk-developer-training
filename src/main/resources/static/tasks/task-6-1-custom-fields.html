@@ -1,69 +1,71 @@
-<main class="d-flex flex-nowrap">
-    <div class="container-fluid py-5">
-        <div class="row h-100">
-            <div class="col-12 col-md-10">
 
-                <h2>Custom Fields</h2>
-                <br>
-                <div class="accordion" id="typeAccordion">
+<div class="container-fluid py-5">
+    <div class="row h-100">
+        <div class="col-md-12">
 
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="task1">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1" >
-                                A customer should have the option to add custom delivery instructions to the order.
-                            </button>
-                        </h2>
-                        <div id="collapse1" class="accordion-collapse show" aria-labelledby="task1" data-bs-parent="#typeAccordion">
-                            <div class="accordion-body">
-                                <span>UPDATE ORDER - <code>POST /orders/id</code></span><br/><br/>
-                                <div class="mb-3">
-                                    <label for="order-number" class="form-label">Order Number</label>
-                                    <input type="text" class="form-control mb-2 me-2" id="order-number" placeholder="Order Number" />
-                                </div>
+            <h2>Custom Fields</h2>
+            <br>
+            <div class="accordion" id="typeAccordion">
 
-                                <div class="mb-3">
-                                    <label for="time" class="form-label">Preferred Delivery Time</label>
-                                    <input type="text" class="form-control mb-2 me-2" id="time" placeholder="No Preference" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="instructions" class="form-label">Instructions</label>
-                                    <input type="text" class="form-control mb-2 me-2" id="instructions" placeholder="Instructions" />
-                                </div>
-                                <input type="checkbox" class="form-check-input mb-2 me-2" id="save" />
-                                <label class="form-check-label mb-2 me-2" for="save">Set as default</label>
-                                <button class="btn btn-primary" onclick="addDeliveryInstructions()">Update Order</button>
-
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="task1">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1" >
+                            A customer should have the option to add custom delivery instructions to the order.
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse show" aria-labelledby="task1" data-bs-parent="#typeAccordion">
+                        <div class="accordion-body">
+                            <span>UPDATE ORDER - <code>POST /orders/id</code></span><br/><br/>
+                            <div class="mb-3">
+                                <label for="order-number" class="form-label">Order Number</label>
+                                <input type="text" class="form-control mb-2 me-2" id="order-number" placeholder="Order Number" />
                             </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="task2">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" >
-                                Create Custom Type.
-                            </button>
-                        </h2>
-                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#typeAccordion">
-                            <div class="accordion-body">
-                                <span>CREATE TYPE - <code>POST /types</code></span><br/><br/>
-                                <button class="btn btn-primary" onclick="createType()">Create Type</button>
 
+                            <div class="mb-3">
+                                <label for="time" class="form-label">Preferred Delivery Time</label>
+                                <input type="text" class="form-control mb-2 me-2" id="time" placeholder="No Preference" />
                             </div>
+
+                            <div class="mb-3">
+                                <label for="instructions" class="form-label">Instructions</label>
+                                <input type="text" class="form-control mb-2 me-2" id="instructions" placeholder="Instructions" />
+                            </div>
+                            <input type="checkbox" class="form-check-input mb-2 me-2" id="save" />
+                            <label class="form-check-label mb-2 me-2" for="save">Set as default</label>
+                            <button class="btn btn-primary" onclick="addDeliveryInstructions()">Update Order</button>
+
                         </div>
-                    </div>
                     </div>
                 </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="task2">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" >
+                            Create Custom Type.
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#typeAccordion">
+                        <div class="accordion-body">
+                            <span>CREATE TYPE - <code>POST /types</code></span><br/><br/>
+                            <button class="btn btn-primary" onclick="createType()">Create Type</button>
 
-                <br/><br/>
-                <div class="flex-fill d-flex">
-                    <div class="container col-10">
-                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                        </div>
                     </div>
+                </div>
                 </div>
             </div>
+
+            <br/><br/>
+        <main class="d-flex flex-nowrap">
+            <div class="row h-100">
+                <div class="d-flex col-md-12">
+                        <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                </div>
+            </div>
+        </main>
         </div>
     </div>
-</main>
+</div>
+
 
 <script>
 

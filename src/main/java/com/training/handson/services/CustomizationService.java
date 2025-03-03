@@ -49,8 +49,8 @@ public class CustomizationService {
 
         // Define the name for the type
         Map<String, String> nameForType = new HashMap<String, String>() {{
-            put("de-DE", "Delivery instructions");
-            put("en-US", "Delivery instructions");
+            put("de-DE", "CT Delivery instructions");
+            put("en-US", "CT Delivery instructions");
         }};
 
         // Create the custom type asynchronously
@@ -58,7 +58,7 @@ public class CustomizationService {
                 .types()
             .post(
                 typeDraftBuilder -> typeDraftBuilder
-                    .key("delivery-instructions")
+                    .key("ct-delivery-instructions")
                     .name(lsb -> lsb.values(nameForType))
                     .resourceTypeIds(
                         ResourceTypeId.CUSTOMER,
@@ -90,13 +90,23 @@ public class CustomizationService {
             final CustomObjectRequest customObjectRequest) {
 
         Map<String, Object> jsonObject = new HashMap<>();
+        final String container = customObjectRequest.getContainer();
+        final String key = customObjectRequest.getKey();
 
-        return apiRoot.customObjects()
-                .post(customObjectDraftBuilder -> customObjectDraftBuilder
-                        .container(customObjectRequest.getContainer())
-                        .key(customObjectRequest.getKey())
-                        .value(jsonObject))
-                .execute();
+        return getCustomObjectWithContainerAndKey(container, key)
+                .handle((customObjectApiHttpResponse, throwable) -> {
+                    if (throwable != null){
+                        return apiRoot.customObjects()
+                                .post(customObjectDraftBuilder -> customObjectDraftBuilder
+                                        .container(customObjectRequest.getContainer())
+                                        .key(customObjectRequest.getKey())
+                                        .value(jsonObject))
+                                .execute();
+                    }
+                    else {
+                        return CompletableFuture.completedFuture(customObjectApiHttpResponse);
+                    }
+                }).thenCompose(apiHttpResponseCompletableFuture -> apiHttpResponseCompletableFuture);
     }
 
     public CompletableFuture<ApiHttpResponse<CustomObject>> getCustomObjectWithContainerAndKey(
@@ -117,8 +127,8 @@ public class CustomizationService {
             final Map<String, Object> jsonObject) {
 
         return getCustomObjectWithContainerAndKey(container, key)
-                .thenCompose(customObjectResponseEntity -> {
-                    Map<String, Object> currentSubscribers = (Map<String, Object>) customObjectResponseEntity.getBody().getValue();
+                .thenCompose(customObjectResponse -> {
+                    Map<String, Object> currentSubscribers = (Map<String, Object>) customObjectResponse.getBody().getValue();
                     currentSubscribers.putAll(jsonObject);
 
                     return apiRoot.customObjects()

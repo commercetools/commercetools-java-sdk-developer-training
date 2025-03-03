@@ -268,30 +268,31 @@
       <li class="border-top my-3"></li>
 
       <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#connectors-collapse" aria-expanded="false">
-          Session 7: Connectors
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#session8-collapse" aria-expanded="false">
+          Session 7: Import API
         </button>
-        <div class="collapse" id="connectors-collapse">
+        <div class="collapse" id="session8-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="tasks/task-7-0-overview.html" id="task70" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-            <li><a href="tasks/task-7-1-connectors.html" id="task71" class="link-body-emphasis d-inline-flex text-decoration-none rounded">CREATE Connectors</a></li>
+            <li><a href="tasks/task-7-0-overview.html" id="task80" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
+            <li><a href="tasks/task-7-1-import.html" id="task81" class="link-body-emphasis d-inline-flex text-decoration-none rounded">IMPORT Products</a></li>
+            <li><a href="tasks/task-7-2-graphql.html" id="task82" class="link-body-emphasis d-inline-flex text-decoration-none rounded">USE GraphQL</a></li>
           </ul>
         </div>
       </li>
       <li class="border-top my-3"></li>
 
       <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#session8-collapse" aria-expanded="false">
-          Session 8: Import API
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#connectors-collapse" aria-expanded="false">
+          Session 8: Connectors
         </button>
-        <div class="collapse" id="session8-collapse">
+        <div class="collapse" id="connectors-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="tasks/task-8-0-overview.html" id="task80" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-            <li><a href="tasks/task-8-1-import.html" id="task81" class="link-body-emphasis d-inline-flex text-decoration-none rounded">IMPORT Products</a></li>
-            <li><a href="tasks/task-8-2-graphql.html" id="task82" class="link-body-emphasis d-inline-flex text-decoration-none rounded">USE GraphQL</a></li>
+            <li><a href="tasks/task-8-0-overview.html" id="task70" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
+            <li><a href="tasks/task-8-1-connectors.html" id="task71" class="link-body-emphasis d-inline-flex text-decoration-none rounded">CREATE Connectors</a></li>
           </ul>
         </div>
       </li>
+
     </ul>
   </div>
 
@@ -310,6 +311,7 @@
 
 <script>
   $(document).ready( function() {
+    getStores();
     $("#sidebar").on("click", "a", function(event) {
       event.preventDefault();
       var target = $(this).attr("href");

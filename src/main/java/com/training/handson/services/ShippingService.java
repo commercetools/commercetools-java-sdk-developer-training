@@ -27,6 +27,15 @@ public class ShippingService {
                 .execute();
     }
 
+    public CompletableFuture<ApiHttpResponse<ShippingMethod>> getShippingMethodByKey(String key) {
+        return apiRoot
+                .shippingMethods()
+                .withKey(key)
+                .get()
+                .withExpand("zoneRates[*].zone")
+                .execute();
+    }
+
     public CompletableFuture<ApiHttpResponse<ShippingMethodPagedQueryResponse>> getShippingMethodsByCountry(String countryCode) {
         return apiRoot
                 .shippingMethods()
@@ -45,13 +54,6 @@ public class ShippingService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<ShippingMethod>> getShippingMethodByKey(String key) {
-        return apiRoot
-                .shippingMethods()
-                .withKey(key)
-                .get()
-                .withExpand("zoneRates[*].zone")
-                .execute();
-    }
+
 
 }

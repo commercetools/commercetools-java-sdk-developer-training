@@ -3,6 +3,7 @@ package com.training.handson.services;
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.product_selection.ProductsInStorePagedQueryResponse;
 import com.commercetools.api.models.store.Store;
+import com.commercetools.api.models.store.StorePagedQueryResponse;
 import io.vrap.rmf.base.client.ApiHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,23 @@ public class StoreService {
                         .get()
                         .addExpand("product")
                         .addExpand("productSelection")
+                        .execute();
+    }
+
+    public CompletableFuture<ApiHttpResponse<Store>> getStoreById(final String storeId) {
+        return
+                apiRoot
+                        .stores()
+                        .withId(storeId)
+                        .get()
+                        .execute();
+    }
+
+    public CompletableFuture<ApiHttpResponse<StorePagedQueryResponse>> getStores() {
+        return
+                apiRoot
+                        .stores()
+                        .get()
                         .execute();
     }
 
