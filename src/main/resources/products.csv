@@ -1,3 +1,3 @@
-productKey,productType,productName,productSlug
-red-wine,drink-product-type,Red Wine,red-wine
-white-wine,drink-product-type,White Wine,white-wine
+productKey,productType,productName,productSlug,sku,currency,price
+red-wine,drink-product-type,Red Wine,red-wine,red-wine-mv,EUR,49.99
+white-wine,drink-product-type,White Wine,white-wine,white-wine-mv,EUR,49.99

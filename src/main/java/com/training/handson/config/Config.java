@@ -3,8 +3,6 @@ package com.training.handson.config;
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.defaultconfig.ApiRootBuilder;
 import com.commercetools.api.defaultconfig.ServiceRegion;
-import static io.vrap.rmf.base.client.http.HttpStatusCode.*;
-import com.commercetools.importapi.defaultconfig.ImportApiRootBuilder;
 import io.vrap.rmf.base.client.ApiHttpMethod;
 import io.vrap.rmf.base.client.http.ErrorMiddleware;
 import io.vrap.rmf.base.client.oauth2.ClientCredentials;
@@ -16,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static io.vrap.rmf.base.client.http.HttpStatusCode.*;
+
 @Configuration
 public class Config {
 
@@ -25,10 +25,13 @@ public class Config {
     @Value("${ctp.clientSecret}")
     private String clientSecret;
 
+    @Value("${ctp.scopes}")
+    private String scopes;
+
     @Value("${ctp.projectKey}")
     private String projectKey;
 
-    @Value("${ctp.storeKey}")
+    @Value("${storeKey}")
     private String storeKey;
 
 
@@ -39,6 +42,7 @@ public class Config {
                         ClientCredentials.of()
                                 .withClientId(clientId)
                                 .withClientSecret(clientSecret)
+                                .withScopes(scopes)
                                 .build(),
                         ServiceRegion.GCP_EUROPE_WEST1
                 )
@@ -50,19 +54,6 @@ public class Config {
                         || apiHttpRequest.getMethod() == ApiHttpMethod.DELETE)
                 .addConcurrentModificationMiddleware(3)
                 .addCorrelationIdProvider(() -> projectKey + "/" + UUID.randomUUID())
-                .build(projectKey);
-    }
-
-    @Bean
-    public com.commercetools.importapi.client.ProjectApiRoot importApiRoot() {
-        return ImportApiRootBuilder.of()
-                .defaultClient(
-                        ClientCredentials.of()
-                                .withClientId(clientId)
-                                .withClientSecret(clientSecret)
-                                .build(),
-                        com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1
-                )
                 .build(projectKey);
     }
 
