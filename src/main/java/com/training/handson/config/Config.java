@@ -3,7 +3,7 @@ package com.training.handson.config;
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.defaultconfig.ApiRootBuilder;
 import com.commercetools.api.defaultconfig.ServiceRegion;
-import com.commercetools.importapi.defaultconfig.ImportApiRootBuilder;
+import io.vrap.rmf.base.client.ApiHttpMethod;
 import io.vrap.rmf.base.client.http.ErrorMiddleware;
 import io.vrap.rmf.base.client.oauth2.ClientCredentials;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +25,13 @@ public class Config {
     @Value("${ctp.clientSecret}")
     private String clientSecret;
 
+    @Value("${ctp.scopes}")
+    private String scopes;
+
     @Value("${ctp.projectKey}")
     private String projectKey;
 
-    @Value("${ctp.storeKey}")
+    @Value("${storeKey}")
     private String storeKey;
 
 
@@ -39,6 +42,7 @@ public class Config {
                         ClientCredentials.of()
                                 .withClientId(clientId)
                                 .withClientSecret(clientSecret)
+                                .withScopes(scopes)
                                 .build(),
                         ServiceRegion.GCP_EUROPE_WEST1
                 )
@@ -46,21 +50,10 @@ public class Config {
                         policyBuilder.withRetry(retryPolicyBuilder ->
                                 retryPolicyBuilder.maxRetries(3).statusCodes(Arrays.asList(BAD_GATEWAY_502, SERVICE_UNAVAILABLE_503, GATEWAY_TIMEOUT_504))))
                 .withErrorMiddleware(ErrorMiddleware.ExceptionMode.UNWRAP_COMPLETION_EXCEPTION)
-                .addConcurrentModificationMiddleware(2)
+                .addNotFoundExceptionMiddleware(apiHttpRequest -> apiHttpRequest.getMethod() == ApiHttpMethod.GET
+                        || apiHttpRequest.getMethod() == ApiHttpMethod.DELETE)
+                .addConcurrentModificationMiddleware(3)
                 .addCorrelationIdProvider(() -> projectKey + "/" + UUID.randomUUID())
-                .build(projectKey);
-    }
-
-    @Bean
-    public com.commercetools.importapi.client.ProjectApiRoot importApiRoot() {
-        return ImportApiRootBuilder.of()
-                .defaultClient(
-                        ClientCredentials.of()
-                                .withClientId(clientId)
-                                .withClientSecret(clientSecret)
-                                .build(),
-                        com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1
-                )
                 .build(projectKey);
     }
 

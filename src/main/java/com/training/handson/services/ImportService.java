@@ -2,9 +2,14 @@ package com.training.handson.services;
 
 import com.commercetools.importapi.client.ProjectApiRoot;
 import com.commercetools.importapi.models.common.LocalizedString;
+import com.commercetools.importapi.models.common.MoneyBuilder;
 import com.commercetools.importapi.models.common.ProductTypeKeyReferenceBuilder;
 import com.commercetools.importapi.models.importrequests.ImportResponse;
 import com.commercetools.importapi.models.importsummaries.ImportSummary;
+import com.commercetools.importapi.models.productdrafts.PriceDraftImportBuilder;
+import com.commercetools.importapi.models.productdrafts.ProductDraftImport;
+import com.commercetools.importapi.models.productdrafts.ProductDraftImportBuilder;
+import com.commercetools.importapi.models.productdrafts.ProductVariantDraftImportBuilder;
 import com.commercetools.importapi.models.products.ProductImport;
 import com.commercetools.importapi.models.products.ProductImportBuilder;
 import io.vrap.rmf.base.client.ApiHttpResponse;
@@ -35,9 +40,9 @@ public class ImportService {
         );
     }
 
-    private List<ProductImport> getProductImportsFromCsv(final MultipartFile csvFile) {
+    private List<ProductDraftImport> getProductDraftImportsFromCsv(final MultipartFile csvFile) {
 
-        List<ProductImport> productImports = new ArrayList<>();
+        List<ProductDraftImport> productImports = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
 
@@ -49,11 +54,22 @@ public class ImportService {
                     name.setValue("en-US", values.get(2));
                     LocalizedString slug = LocalizedString.of();
                     slug.setValue("en-US", values.get(3));
-                    ProductImport productImport = ProductImportBuilder.of()
+                    ProductDraftImport productImport = ProductDraftImportBuilder.of()
                             .key(values.get(0))
                             .productType(ProductTypeKeyReferenceBuilder.of().key(values.get(1)).build())
                             .name(name)
                             .slug(slug)
+                            .masterVariant(ProductVariantDraftImportBuilder.of()
+                                    .sku(values.get(4))
+                                    .key(values.get(4))
+                                    .prices(PriceDraftImportBuilder.of()
+                                            .key(values.get(4)+"-"+values.get(5).toLowerCase()+"-price")
+                                            .value(MoneyBuilder.of()
+                                                    .currencyCode(values.get(5))
+                                                    .centAmount((long) (Double.parseDouble(values.get(6)) * 100))
+                                                    .build())
+                                            .build())
+                                    .build())
                             .build();
                     productImports.add(productImport);
                 }
