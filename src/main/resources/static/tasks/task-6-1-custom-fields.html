@@ -29,8 +29,7 @@
                                 <label for="instructions" class="form-label">Instructions</label>
                                 <input type="text" class="form-control mb-2 me-2" id="instructions" placeholder="Instructions" />
                             </div>
-                            <input type="checkbox" class="form-check-input mb-2 me-2" id="save" />
-                            <label class="form-check-label mb-2 me-2" for="save">Set as default</label>
+
                             <button class="btn btn-primary" onclick="addDeliveryInstructions()">Update Order</button>
 
                         </div>
@@ -75,10 +74,8 @@
 
         let formData = {
             orderNumber: document.getElementById('order-number').value,
-            customerId: localStorage.getItem('customerId'),
             time: document.getElementById('time').value,
-            instructions: document.getElementById('instructions').value,
-            save: document.getElementById('save').checked
+            instructions: document.getElementById('instructions').value
         };
 
         fetch('/api/orders/custom-fields', {

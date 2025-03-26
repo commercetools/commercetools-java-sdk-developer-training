@@ -66,10 +66,6 @@ public class OrderService {
         return getOrderByOrderNumber(orderNumber)
                 .thenApply(ApiHttpResponse::getBody)
                 .thenComposeAsync(order -> {
-                    if (customFieldRequest.isSave() && customFieldRequest.getCustomerId() != null) {
-                        customFieldRequest.setAddressKey(order.getShippingAddress().getKey());
-                        customerService.setAddressCustomFields(customFieldRequest);
-                    }
                     return apiRoot
                             .inStore(storeKey)
                             .orders()
@@ -78,7 +74,7 @@ public class OrderService {
                                     updateBuilder -> updateBuilder
                                             .version(order.getVersion())
                                             .plusActions(actionBuilder -> actionBuilder.setShippingAddressCustomTypeBuilder()
-                                                    .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("address-delivery-instructions"))
+                                                    .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("ct-delivery-instructions"))
                                                     .fields(fieldContainerBuilder -> fieldContainerBuilder
                                                             .addValue("instructions", customFieldRequest.getInstructions())
                                                             .addValue("time", customFieldRequest.getTime())

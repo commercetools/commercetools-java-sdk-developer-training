@@ -52,13 +52,13 @@ public class CartService {
             if (StringUtils.isNotEmpty(cartId)) {
                 return addProductToCartBySkusAndChannel(cartId, sku, quantity);
             } else if (StringUtils.isNotEmpty(customerId)) {
-                return createCustomerCart(customerId, sku, quantity);
+                return createCart(sku, quantity, customerId);
             } else {
-                return createAnonymousCart(sku, quantity);
+                return createCart(sku, quantity);
             }
     }
 
-    private CompletableFuture<ApiHttpResponse<Cart>> createAnonymousCart(
+    private CompletableFuture<ApiHttpResponse<Cart>> createCart(
             final String sku,
             final Long quantity
 //            final String supplyChannelKey,
@@ -92,10 +92,10 @@ public class CartService {
                 });
     }
 
-    private CompletableFuture<ApiHttpResponse<Cart>> createCustomerCart(
-            final String customerId,
+    private CompletableFuture<ApiHttpResponse<Cart>> createCart(
             final String sku,
-            final Long quantity
+            final Long quantity,
+            final String customerId
 //            final String supplyChannelKey,
 //            final String distChannelKey
     ) {
@@ -205,14 +205,7 @@ public class CartService {
             final AddressRequest addressRequest) {
 
         Address address = addressRequest.getAddress();
-        if (addressRequest.isDefaultShippingAddress() != null && addressRequest.isDefaultShippingAddress()) {
-            final String customerId = addressRequest.getCustomerId();
-            address.setKey("ct" +System.nanoTime());
-            customerService.addDefaultShippingAddressToCustomer(customerId, address)
-                    .thenAccept(customerApiHttpResponse -> {
-                        address.setId(customerApiHttpResponse.getBody().getDefaultShippingAddressId());
-                    });
-        }
+
         return this.getCartById(addressRequest.getCartId())
             .thenApply(ApiHttpResponse::getBody)
             .thenCompose(cart -> {

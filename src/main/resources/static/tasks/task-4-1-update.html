@@ -48,12 +48,7 @@
                         <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
                                 <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
-                                <div id="address-selection"></div>
-                                <div class="form-check mb-3 mt-2">
-                                    <input class="form-check-input" type="radio" name="addressOption" id="addNewAddress" value="addNewAddress" onclick="showNewAddressForm()" />
-                                    <label class="form-check-label" for="addNewAddress">Add New Address</label>
-                                </div>
-                                <div id="new-address-form" class="d-none">
+                                <div id="new-address-form">
                                     <div class="d-flex flex-column justify-content-between">
                                         <div class="d-flex flex-row mt-4">
                                             <div class="col-md-4 mb-2"><label for="firstName" class="form-label">First Name</label></div>
@@ -87,10 +82,6 @@
                                             <div class="col-md-4 mb-2"><label for="email" class="form-label">Email</label></div>
                                             <div class="col-md-8 mb-2"><input type="text" class="form-control" id="email" name="email" required></div>
                                         </div>
-                                        <div id="save-checkbox" class="form-check mt-3 mb-3 d-none">
-                                            <input type="checkbox" class="form-check-input" id="setDefaultShippingAddress" name="setDefaultShippingAddress">
-                                            <label class="form-check-label" for="setDefaultShippingAddress">Set as Default Shipping Address</label>
-                                        </div>
                                     </div>
                                 </div>
                                 <button class="btn btn-primary" onclick="updateShippingAddress()">Add Shipping Address</button>
@@ -115,62 +106,6 @@
 
 
 <script>
-        let addresses;
-        function showNewAddressForm() {
-            document.getElementById('new-address-form').classList.remove('d-none');
-            if(localStorage.getItem('customerId')){
-                document.getElementById('save-checkbox').classList.remove('d-none');
-            }
-        }
-        function hideNewAddressForm() {
-            document.getElementById('new-address-form').classList.add('d-none');
-        }
-
-        function getShippingAddresses(event) {
-            let customerId = localStorage.getItem('customerId');
-
-            if (customerId){
-                const jsonResponseDiv = document.getElementById('json-response');
-                jsonResponseDiv.textContent = "";
-
-                let url = `/api/customers/${customerId}`;
-                fetch(url)
-                .then(handleResponse)
-                .then(customer => {
-                    console.log('Success:', customer);
-                    const addressSelectionDiv = document.getElementById('address-selection');
-                    addresses = customer.shippingAddresses;
-                    addressSelectionDiv.innerHTML = ''; // Clear any existing addresses
-
-                    addresses.forEach(address => {
-                        const radioButton = document.createElement('div');
-                        radioButton.classList.add('form-check');
-                        const firstName = address.firstName ? address.firstName : '';
-                        const lastName = address.lastName ? address.lastName : '';
-                        const region = address.region ? address.region : '';
-                        const country = address.country ? address.country : '';
-
-                        radioButton.innerHTML = `
-                            <input class="form-check-input mb-2" type="radio" name="addressOption" id="address-${address.id}" value="${address.id}" ${(address.id === customer.defaultShippingAddressId) ? 'checked' : ''} onclick="hideNewAddressForm()">
-                            <label class="form-check-label mb-2" for="address-${address.id}">
-                                ${firstName} ${lastName}, ${region} ${country}
-                            </label>
-                        `;
-                        addressSelectionDiv.appendChild(radioButton);
-                    });
-                    jsonResponseDiv.textContent = JSON.stringify(customer, null, 2);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    jsonResponseDiv.textContent = error.message;
-                });
-            }
-        }
-
-        if (typeof shippingAccordionButton === 'undefined') {
-            let shippingAccordionButton = document.getElementById('shipping-accordion-button');
-            shippingAccordionButton.addEventListener('click', getShippingAddresses);
-        }
 
         function getCart() {
             const jsonResponseDiv = document.getElementById('json-response');
@@ -239,56 +174,35 @@
 
             if (cartId) {
                 let formData = {
-                    cartId: cartId
-                }
-
-                const selectedRadioButton = document.querySelector('input[name="addressOption"]:checked');
-                if (selectedRadioButton) {
-                    const selectedAddressId = selectedRadioButton.value;
-                    if (selectedAddressId === 'addNewAddress')
-                    {
-                        if(localStorage.getItem('customerId')){
-                            console.log(localStorage.getItem('customerId'));
-                            formData.customerId = localStorage.getItem('customerId');
-                        }
-
-                        formData.address = {
-                            firstName: document.getElementById('firstName').value,
-                            lastName: document.getElementById('lastName').value,
-                            streetNumber: document.getElementById('streetNumber').value,
-                            streetName: document.getElementById('streetName').value,
-                            city: document.getElementById('city').value,
-                            region: document.getElementById('region').value,
-                            country: document.getElementById('country').value,
-                            email: document.getElementById('email').value
-                        };
-                        formData.defaultShippingAddress = document.getElementById('setDefaultShippingAddress').checked;
+                    cartId: cartId,
+                    address: {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        streetNumber: document.getElementById('streetNumber').value,
+                        streetName: document.getElementById('streetName').value,
+                        city: document.getElementById('city').value,
+                        region: document.getElementById('region').value,
+                        country: document.getElementById('country').value,
+                        email: document.getElementById('email').value
                     }
-                    else {
-                        const selectedAddress = addresses.find(address => address.id === selectedAddressId);
-                        formData.address = selectedAddress;
-                    }
-                    fetch('/api/carts/shipping-address', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(formData)
-                    })
-                    .then(handleResponse)
-                    .then(data => {
-                        console.log('Success:', data);
-                        hideNewAddressForm();
-                        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        jsonResponseDiv.textContent = error.message;
-                    });
-                }
-                else {
-                    jsonResponseDiv.textContent = 'Select an address first.';
-                }
+                };
+
+                fetch('/api/carts/shipping-address', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                })
+                .then(handleResponse)
+                .then(data => {
+                    console.log('Success:', data);
+                    jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
             }
             else {
                     jsonResponseDiv.textContent = 'No current active cart';
