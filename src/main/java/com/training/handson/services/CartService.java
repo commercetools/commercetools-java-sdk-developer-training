@@ -4,11 +4,14 @@ import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.cart.*;
 import com.commercetools.api.models.common.Address;
 import com.commercetools.api.models.common.AddressBuilder;
+import com.commercetools.api.models.common.AddressDraft;
 import com.commercetools.api.models.customer.Customer;
 import com.commercetools.api.models.shipping_method.ShippingMethod;
 import com.commercetools.api.models.store.Store;
 import com.training.handson.dto.AddressRequest;
+import com.training.handson.dto.CartUpdateRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,9 @@ public class CartService {
     @Autowired
     private StoreService storeService;
 
+    @Autowired
+    private CustomerService customerService;
+
     public CompletableFuture<ApiHttpResponse<Cart>> getCartById(final String cartId) {
 
             return apiRoot
@@ -36,7 +42,23 @@ public class CartService {
                     .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> createAnonymousCart(
+    public CompletableFuture<ApiHttpResponse<Cart>> updateCart(CartUpdateRequest cartUpdateRequest){
+
+        final String cartId = cartUpdateRequest.getCartId();
+        final String customerId = cartUpdateRequest.getCustomerId();
+        final String sku = cartUpdateRequest.getSku();
+        final Long quantity = cartUpdateRequest.getQuantity();
+
+            if (StringUtils.isNotEmpty(cartId)) {
+                return addProductToCartBySkusAndChannel(cartId, sku, quantity);
+            } else if (StringUtils.isNotEmpty(customerId)) {
+                return createCustomerCart(customerId, sku, quantity);
+            } else {
+                return createAnonymousCart(sku, quantity);
+            }
+    }
+
+    private CompletableFuture<ApiHttpResponse<Cart>> createAnonymousCart(
             final String sku,
             final Long quantity
 //            final String supplyChannelKey,
@@ -70,44 +92,44 @@ public class CartService {
                 });
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> createCustomerCart(
-            final ApiHttpResponse<Customer> customerApiHttpResponse,
-            final ApiHttpResponse<Store> storeApiHttpResponse,
+    private CompletableFuture<ApiHttpResponse<Cart>> createCustomerCart(
+            final String customerId,
             final String sku,
-            final Long quantity,
-            final String supplyChannelKey,
-            final String distChannelKey) {
-
-        final Customer customer = customerApiHttpResponse.getBody();
-        final String countryCode = storeApiHttpResponse.getBody().getCountries().get(0).getCode();
-        String currencyCode = getCurrencyCodeByCountry(countryCode);
+            final Long quantity
+//            final String supplyChannelKey,
+//            final String distChannelKey
+    ) {
 
         return
-                apiRoot
-                        .inStore(storeKey)
-                        .carts()
-                        .post(
-                                cartDraftBuilder -> cartDraftBuilder
-                                        .currency(currencyCode)
-                                        .deleteDaysAfterLastModification(90L)
-                                        .customerEmail(customer.getEmail())
-                                        .customerId(customer.getId())
-                                        .country(countryCode)
-                                        .shippingAddress(customer.getAddresses().stream()
-                                                .filter(address -> address.getId().equals(customer.getDefaultShippingAddressId()))
-                                                .findFirst()
-                                                .orElse(null))
-                                        .addLineItems(lineItemDraftBuilder -> lineItemDraftBuilder
-                                                .sku(sku)
-                                                .supplyChannel(channelResourceIdentifierBuilder ->
-                                                        channelResourceIdentifierBuilder.key(supplyChannelKey))
-                                                .distributionChannel(channelResourceIdentifierBuilder ->
-                                                        channelResourceIdentifierBuilder.key(distChannelKey))
-                                                .quantity(quantity)
-                                                .build())
-                                        .inventoryMode(InventoryMode.NONE)
-                        )
-                        .execute();
+                customerService.getCustomerById(customerId).thenApply(ApiHttpResponse::getBody)
+                    .thenCombineAsync(storeService.getCurrentStore().thenApply(ApiHttpResponse::getBody),
+                        ((customer, store) -> {
+                            String countryCode = store.getCountries().get(0).getCode();
+                            String currencyCode = getCurrencyCodeByCountry(countryCode);
+                            return apiRoot
+                                    .inStore(storeKey)
+                                    .carts()
+                                    .post(
+                                            cartDraftBuilder -> cartDraftBuilder
+                                                    .currency(currencyCode)
+                                                    .deleteDaysAfterLastModification(90L)
+                                                    .customerEmail(customer.getEmail())
+                                                    .customerId(customer.getId())
+                                                    .country(countryCode)
+                                                    .shippingAddress(customer.getDefaultShippingAddress())
+                                                    .addLineItems(lineItemDraftBuilder -> lineItemDraftBuilder
+                                                            .sku(sku)
+//                                                            .supplyChannel(channelResourceIdentifierBuilder ->
+//                                                                    channelResourceIdentifierBuilder.key(supplyChannelKey))
+//                                                            .distributionChannel(channelResourceIdentifierBuilder ->
+//                                                                    channelResourceIdentifierBuilder.key(distChannelKey))
+                                                            .quantity(quantity)
+                                                            .build())
+                                                    .inventoryMode(InventoryMode.NONE)
+                                    )
+                                    .execute();
+                        }
+                )).join();
     }
 
     private String getCurrencyCodeByCountry(final String countryCode){
@@ -118,7 +140,7 @@ public class CartService {
         };
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> addProductToCartBySkusAndChannel(
+    private CompletableFuture<ApiHttpResponse<Cart>> addProductToCartBySkusAndChannel(
             final String cartId,
             final String sku,
             final Long quantity
@@ -182,13 +204,15 @@ public class CartService {
     public CompletableFuture<ApiHttpResponse<Cart>> setShippingAddress(
             final AddressRequest addressRequest) {
 
-        Address address = AddressBuilder.of()
-                .firstName(addressRequest.getFirstName())
-                .lastName(addressRequest.getLastName())
-                .country(addressRequest.getCountry())
-                .email(addressRequest.getEmail())
-                .build();
-
+        Address address = addressRequest.getAddress();
+        if (addressRequest.isDefaultShippingAddress() != null && addressRequest.isDefaultShippingAddress()) {
+            final String customerId = addressRequest.getCustomerId();
+            address.setKey("ct" +System.nanoTime());
+            customerService.addDefaultShippingAddressToCustomer(customerId, address)
+                    .thenAccept(customerApiHttpResponse -> {
+                        address.setId(customerApiHttpResponse.getBody().getDefaultShippingAddressId());
+                    });
+        }
         return this.getCartById(addressRequest.getCartId())
             .thenApply(ApiHttpResponse::getBody)
             .thenCompose(cart -> {
@@ -204,7 +228,7 @@ public class CartService {
                                         .setShippingAddressBuilder()
                                         .address(address))
                                 .plusActions(cartUpdateActionBuilder -> cartUpdateActionBuilder
-                                        .setCustomerEmailBuilder().email(addressRequest.getEmail()))
+                                        .setCustomerEmailBuilder().email(address.getEmail()))
                         )
                         .execute();
             });

@@ -1,7 +1,7 @@
 
     <div class="container py-5">
         <div class="row h-100">
-            <div class="col-md-12">
+            <div class="col-md-9">
 
                 <h2>Custom Fields</h2>
                 <br>
@@ -29,13 +29,10 @@
 
                 <br/><br/>
                 <main class="d-flex flex-nowrap">
-                    <div class="row h-100">
+                    <div class="row h-100 w-100">
                         <div class="d-flex col-md-12">
-                            <div class="container col-md-6">
+                            <div class="container col-md-12">
                                 <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
-                            </div>
-                            <div class="container col-md-6">
-                                <div id="results"></div>
                             </div>
                         </div>
                     </div>
@@ -50,10 +47,8 @@
     function getOrders() {
         let email = document.getElementById('email').value.trim();
         const jsonResponseDiv = document.getElementById('json-response');
-        const resultsDiv = document.getElementById('results');
 
         jsonResponseDiv.textContent = '';
-        resultsDiv.innerHTML = '';
 
         if (email) {
             let url = '/api/graphql/orders';
@@ -70,7 +65,7 @@
                 jsonResponseDiv.textContent = error.message;
             });
         }
-        else resultsDiv.innerHTML = "enter a valid email";
+        else jsonResponseDiv.textContent = "enter a valid email";
     }
 
 </script>

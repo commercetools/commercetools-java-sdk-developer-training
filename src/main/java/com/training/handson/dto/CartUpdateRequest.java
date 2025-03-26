@@ -1,8 +1,9 @@
 package com.training.handson.dto;
 
-public class UpdateCartRequest {
+public class CartUpdateRequest {
 
     private String cartId;
+    private String customerId;
     private String sku;
     private Long quantity;
     private String supplyChannel;
@@ -12,6 +13,10 @@ public class UpdateCartRequest {
     public String getCartId() { return cartId; }
 
     public void setCartId(String cartId) { this.cartId = cartId; }
+
+    public String getCustomerId() {return customerId;}
+
+    public void setCustomerId(String customerId) {this.customerId = customerId;}
 
     public String getSku() {
         return sku;

@@ -58,11 +58,12 @@ public class CustomizationService {
                 .types()
             .post(
                 typeDraftBuilder -> typeDraftBuilder
-                    .key("ct-delivery-instructions")
+                    .key("address-delivery-instructions")
                     .name(lsb -> lsb.values(nameForType))
                     .resourceTypeIds(
                         ResourceTypeId.CUSTOMER,
-                        ResourceTypeId.ORDER
+                        ResourceTypeId.ORDER,
+                        ResourceTypeId.ADDRESS
                     )
                     .fieldDefinitions(definitions)
             ).execute();

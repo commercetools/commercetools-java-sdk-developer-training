@@ -4,11 +4,18 @@ public class CustomerCreateRequest {
 
     private String email;
     private String password;
-    private String customerKey;
+    private String key;
     private String firstName;
     private String lastName;
-    private String country;
     private String anonymousCartId;
+
+    private String streetNumber;
+    private String streetName;
+    private String city;
+    private String region;
+    private String country;
+    private Boolean defaultShippingAddress;
+    private Boolean defaultBillingAddress;
 
     public String getEmail() {
         return email;
@@ -26,12 +33,12 @@ public class CustomerCreateRequest {
         this.password = password;
     }
 
-    public String getCustomerKey() {
-        return customerKey;
+    public String getKey() {
+        return key;
     }
 
-    public void setCustomerKey(String customerKey) {
-        this.customerKey = customerKey;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getFirstName() {
@@ -62,7 +69,32 @@ public class CustomerCreateRequest {
         return anonymousCartId;
     }
 
-    public void setCartId(String anonymousCartId) {
+    public Boolean isDefaultShippingAddress() {return defaultShippingAddress;}
+
+    public void setDefaultShippingAddress(Boolean defaultShippingAddress) {this.defaultShippingAddress = defaultShippingAddress;}
+
+    public void setAnonymousCartId(String anonymousCartId) {
         this.anonymousCartId = anonymousCartId;
     }
+
+    public String getRegion() {return region;}
+
+    public void setRegion(String region) {this.region = region;}
+
+    public String getCity() {return city;}
+
+    public void setCity(String city) {this.city = city;}
+
+    public Boolean isDefaultBillingAddress() {return defaultBillingAddress;}
+
+    public void setDefaultBillingAddress(Boolean defaultBillingAddress) {this.defaultBillingAddress = defaultBillingAddress;}
+
+    public String getStreetName() {return streetName;}
+
+    public void setStreetName(String streetName) {this.streetName = streetName;}
+
+    public String getStreetNumber() {return streetNumber;}
+
+    public void setStreetNumber(String streetNumber) {this.streetNumber = streetNumber;}
+
 }

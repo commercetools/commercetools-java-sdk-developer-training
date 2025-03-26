@@ -4,6 +4,7 @@ public class CustomFieldRequest {
 
     private String customerId;
     private String orderNumber;
+    private String addressKey;
     private String instructions;
     private String time;
     private boolean save;
@@ -39,6 +40,10 @@ public class CustomFieldRequest {
     public void setOrderNumber(String orderNumber) {
         this.orderNumber = orderNumber;
     }
+
+    public String getAddressKey() {return addressKey;}
+
+    public void setAddressKey(String addressKey) {this.addressKey = addressKey;}
 
     public boolean isSave() {
         return save;

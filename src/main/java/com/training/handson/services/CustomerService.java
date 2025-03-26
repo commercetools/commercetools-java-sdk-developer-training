@@ -51,30 +51,45 @@ public class CustomerService {
 
         final String email = customerCreateRequest.getEmail();
         final String password = customerCreateRequest.getPassword();
-        final String customerKey = customerCreateRequest.getCustomerKey();
+        final String key = customerCreateRequest.getKey();
         final String firstName = customerCreateRequest.getFirstName();
         final String lastName = customerCreateRequest.getLastName();
+        final String streetNumber = customerCreateRequest.getStreetNumber();
+        final String streetName = customerCreateRequest.getStreetName();
+        final String city = customerCreateRequest.getCity();
+        final String region = customerCreateRequest.getRegion();
         final String country = customerCreateRequest.getCountry();
         final String anonymousCartId = customerCreateRequest.getAnonymousCartId();
+
 
         CustomerDraftBuilder builder = CustomerDraftBuilder.of()
                 .email(email)
                 .password(password)
                 .firstName(firstName)
                 .lastName(lastName)
-                .key(customerKey)
+                .key(key)
                 .stores(StoreResourceIdentifierBuilder.of().key(storeKey).build());
 
         if(country != null && !country.isEmpty())
-                builder.addresses(
+            builder.addresses(
                     AddressBuilder.of()
-                            .key(customerKey + "-default-address")
+                            .key("ct" + System.nanoTime())
                             .firstName(firstName)
                             .lastName(lastName)
+                            .streetNumber(streetNumber)
+                            .streetName(streetName)
+                            .city(city)
+                            .region(region)
                             .country(country)
-                            .build()
-                )
-                .defaultShippingAddress(0);
+                            .email(email)
+                            .build());
+
+        if(customerCreateRequest.isDefaultBillingAddress())
+            builder.defaultBillingAddress(0);
+
+        if(customerCreateRequest.isDefaultShippingAddress())
+            builder.defaultShippingAddress(0);
+
 
         if(StringUtils.isNotEmpty(anonymousCartId))
             builder.anonymousCart(cartResourceIdentifierBuilder ->
@@ -113,6 +128,65 @@ public class CustomerService {
                 .execute();
     }
 
+    public CompletableFuture<ApiHttpResponse<Customer>> addDefaultShippingAddressToCustomer(
+            final String customerId,
+            final Address address) {
+
+        return getCustomerById(customerId)
+                .thenComposeAsync(customerApiHttpResponse ->
+                        apiRoot
+                                .inStore(storeKey)
+                                .customers()
+                                .withId(customerId)
+                                .post(
+                                        customerUpdateBuilder -> customerUpdateBuilder
+                                                .version(customerApiHttpResponse.getBody().getVersion())
+                                                .plusActions(actionBuilder ->actionBuilder
+                                                        .addAddressBuilder()
+                                                        .address(address))
+                                                .plusActions(actionBuilder -> actionBuilder
+                                                        .setDefaultShippingAddressBuilder()
+                                                        .addressKey(address.getKey()))
+                                )
+                                .execute()
+                );
+    }
+
+    public CompletableFuture<ApiHttpResponse<Customer>> setAddressCustomFields(
+            final CustomFieldRequest customFieldRequest) {
+
+        final String customerId = customFieldRequest.getCustomerId();
+        final String addressKey = customFieldRequest.getAddressKey();
+        final String instructions = customFieldRequest.getInstructions();
+        final String time = customFieldRequest.getTime();
+
+        return getCustomerById(customerId)
+                .thenApply(ApiHttpResponse::getBody)
+                .thenComposeAsync(customer -> {
+                    String addressId = getAddressIdByKey(customer, addressKey);
+                    return apiRoot
+                            .inStore(storeKey)
+                            .customers()
+                            .withId(customerId)
+                            .post(
+                                    updateBuilder -> updateBuilder
+                                            .version(customer.getVersion())
+                                            .plusActions(actionBuilder -> actionBuilder.setAddressCustomTypeBuilder()
+                                                    .addressId(addressId)
+                                                    .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("address-delivery-instructions"))
+                                                    .fields(fieldContainerBuilder -> fieldContainerBuilder
+                                                            .addValue("instructions", instructions)
+                                                            .addValue("time", time)
+                                                    )
+                                            )
+                            )
+                            .execute();
+                });
+    }
+
+    private String getAddressIdByKey(final Customer customer, final String addressKey){
+       return customer.getAddresses().stream().filter(address -> address.getKey().equals(addressKey)).findFirst().map(Address::getId).orElse(null);
+    }
 
     public CompletableFuture<ApiHttpResponse<CustomerToken>> createEmailVerificationToken(
             final ApiHttpResponse<CustomerSignInResult> customerSignInResultApiHttpResponse,
@@ -193,74 +267,19 @@ public class CustomerService {
             final String customerGroupKey) {
 
         return getCustomerByKey(customerKey)
-            .thenComposeAsync(customerApiHttpResponse ->
-                apiRoot
-                    .inStore(storeKey)
-                    .customers()
-                    .withKey(customerKey)
-                    .post(
-                        customerUpdateBuilder -> customerUpdateBuilder
-                            .version(customerApiHttpResponse.getBody().getVersion())
-                            .plusActions(
-                                customerUpdateActionBuilder -> customerUpdateActionBuilder
-                                    .setCustomerGroupBuilder()
-                                    .customerGroup(customerGroupResourceIdentifierBuilder -> customerGroupResourceIdentifierBuilder.key(customerGroupKey))
-                            )
-                    )
-                    .execute()
-            );
-    }
-
-    public CompletableFuture<ApiHttpResponse<Customer>> setCustomFields(
-            final CustomFieldRequest customFieldRequest) {
-
-        final String customerId = customFieldRequest.getCustomerId();
-        final String instructions = customFieldRequest.getInstructions();
-        final String time = customFieldRequest.getTime();
-
-        return getCustomerById(customerId)
-                .thenComposeAsync(customerApiHttpResponse -> apiRoot
-                        .inStore(storeKey)
-                        .customers()
-                        .withId(customerId)
-                        .post(
-                                updateBuilder -> updateBuilder
-                                        .version(customerApiHttpResponse.getBody().getVersion())
-                                        .plusActions(customerUpdateActionBuilder -> customerUpdateActionBuilder.setCustomTypeBuilder()
-                                                .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("delivery-instructions"))
-                                                .fields(fieldContainerBuilder -> fieldContainerBuilder
-                                                        .addValue("instructions", instructions)
-                                                        .addValue("time", time)
-                                                )
-                                        )
-                        )
-                        .execute());
-    }
-
-    public CompletableFuture<ApiHttpResponse<Customer>> addDefaultShippingAddressToCustomer(
-            final String customerKey,
-            final Address address) {
-
-        return getCustomerByKey(customerKey)
                 .thenComposeAsync(customerApiHttpResponse ->
                         apiRoot
                                 .inStore(storeKey)
                                 .customers()
                                 .withKey(customerKey)
                                 .post(
-                                        CustomerUpdateBuilder.of()
-                                                .actions(
-                                                        Arrays.asList(
-                                                                CustomerAddAddressActionBuilder.of()
-                                                                        .address(address)
-                                                                        .build(),
-                                                                CustomerSetDefaultShippingAddressActionBuilder.of()
-                                                                        .addressKey(address.getKey())
-                                                                        .build()
-                                                        )
-                                                )
+                                        customerUpdateBuilder -> customerUpdateBuilder
                                                 .version(customerApiHttpResponse.getBody().getVersion())
-                                                .build()
+                                                .plusActions(
+                                                        customerUpdateActionBuilder -> customerUpdateActionBuilder
+                                                                .setCustomerGroupBuilder()
+                                                                .customerGroup(customerGroupResourceIdentifierBuilder -> customerGroupResourceIdentifierBuilder.key(customerGroupKey))
+                                                )
                                 )
                                 .execute()
                 );

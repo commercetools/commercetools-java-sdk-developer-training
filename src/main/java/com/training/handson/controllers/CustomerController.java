@@ -2,6 +2,7 @@ package com.training.handson.controllers;
 
 import com.commercetools.api.models.customer.Customer;
 import com.commercetools.api.models.customer.CustomerSignInResult;
+import com.commercetools.api.models.product_search.ProductPagedSearchResponse;
 import com.training.handson.dto.CustomerCreateRequest;
 import com.training.handson.services.CustomerService;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,15 @@ public class CustomerController {
         return customerService.createCustomer(customerCreateRequest).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/{customerKey}")
-    public CompletableFuture<ResponseEntity<Customer>> getCustomer(@PathVariable String customerKey) {
-        return customerService.getCustomerByKey(customerKey).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerById(@PathVariable String id) {
+        return customerService.getCustomerById(id).thenApply(ResponseConverter::convert);
+    }
+
+    @GetMapping("/key={key}")
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerByKey(
+            @PathVariable String key) {
+        return customerService.getCustomerByKey(key).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping("/login")

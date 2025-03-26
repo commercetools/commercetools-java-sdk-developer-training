@@ -1,92 +1,29 @@
 package com.training.handson.dto;
 
+import com.commercetools.api.models.common.Address;
+import com.commercetools.api.models.common.BaseAddress;
+
 public class AddressRequest {
 
     private String cartId;
-    private String country;
-    private String email;
-    private String streetName;
-    private String lastName;
-    private String firstName;
-    private String mobile;
-    private String state;
-    private String city;
-    private String streetNumber;
+    private String customerId;
+    private Address address;
+    private Boolean defaultShippingAddress;
 
-    public String getMobile() {
-        return mobile;
-    }
+    public Boolean isDefaultShippingAddress() {return defaultShippingAddress;}
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
+    public void setDefaultShippingAddress(Boolean defaultShippingAddress) {this.defaultShippingAddress = defaultShippingAddress;}
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public Address getAddress() {return address;}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getStreetName() {
-        return streetName;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
-    }
-
-    public String getStreetNumber() {
-        return streetNumber;
-    }
-
-    public void setStreetNumber(String streetNumber) {
-        this.streetNumber = streetNumber;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
+    public void setAddress(Address address) {this.address = address;}
 
     public String getCartId() { return cartId; }
 
     public void setCartId(String cartId) { this.cartId = cartId; }
+
+    public String getCustomerId() { return customerId; }
+
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
 
 }

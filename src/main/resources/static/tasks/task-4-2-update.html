@@ -1,0 +1,298 @@
+
+    <div class="container py-5">
+        <div class="row h-100">
+            <div class="col-md-9">
+
+                <h2>Cart</h2>
+                <br>
+                <div class="accordion" id="cartAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="form">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-form" aria-expanded="true" aria-controls="collapse-form" >
+                                A customer should see the current cart.
+                            </button>
+                        </h2>
+                        <div id="collapse-form" class="accordion-collapse show" aria-labelledby="form" data-bs-parent="#cartAccordion">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <span><code>GET /carts/id</code></span>
+                                    <button class="btn btn-primary" onclick="getCart()">Get Cart</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1" >
+                                A customer wants to use a discount coupon.
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="task1" data-bs-parent="#cartAccordion">
+                            <div class="accordion-body">
+                                <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
+                                <div class="mb-3">
+                                    <label for="code" class="form-label">Discount Code</label>
+                                    <input type="text" class="form-control mb-2 me-2" id="code" />
+                                </div>
+                                <button class="btn btn-primary" onclick="updateCart()">Update Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="task2">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" id="shipping-accordion-button" >
+                                A customer wants to update the shipping address and choose a shipping method.
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#cartAccordion">
+                            <div class="accordion-body">
+                                <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
+                                <div id="address-selection"></div>
+                                <div class="form-check mb-3 mt-2">
+                                    <input class="form-check-input" type="radio" name="addressOption" id="addNewAddress" value="addNewAddress" onclick="showNewAddressForm()" />
+                                    <label class="form-check-label" for="addNewAddress">Add New Address</label>
+                                </div>
+                                <div id="new-address-form" class="d-none">
+                                    <div class="d-flex flex-column justify-content-between">
+                                        <div class="d-flex flex-row mt-4">
+                                            <div class="col-md-4 mb-2"><label for="firstName" class="form-label">First Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="firstName" name="firstName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="lastName" class="form-label">Last Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="lastName" name="lastName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="streetNumber" class="form-label">Street Number</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="streetNumber" name="streetNumber" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="streetName" class="form-label">Street Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="streetName" name="streetName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="region" class="form-label">State</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="region" name="region" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="city" class="form-label">City</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="city" name="city" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="country" class="form-label">Country</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="country" name="country" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="email" class="form-label">Email</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="email" name="email" required></div>
+                                        </div>
+                                        <div id="save-checkbox" class="form-check mt-3 mb-3 d-none">
+                                            <input type="checkbox" class="form-check-input" id="setDefaultShippingAddress" name="setDefaultShippingAddress">
+                                            <label class="form-check-label" for="setDefaultShippingAddress">Set as Default Shipping Address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="updateShippingAddress()">Add Shipping Address</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br/>
+                <main class="d-flex flex-nowrap">
+                    <div class="row h-100 w-100">
+                        <div class="d-flex col-md-12">
+                            <div class="container col-md-12">
+                                <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+        let addresses;
+        function showNewAddressForm() {
+            document.getElementById('new-address-form').classList.remove('d-none');
+            if(localStorage.getItem('customerId')){
+                document.getElementById('save-checkbox').classList.remove('d-none');
+            }
+        }
+        function hideNewAddressForm() {
+            document.getElementById('new-address-form').classList.add('d-none');
+        }
+
+        function getShippingAddresses(event) {
+            let customerId = localStorage.getItem('customerId');
+
+            if (customerId){
+                const jsonResponseDiv = document.getElementById('json-response');
+                jsonResponseDiv.textContent = "";
+
+                let url = `/api/customers/${customerId}`;
+                fetch(url)
+                .then(handleResponse)
+                .then(customer => {
+                    console.log('Success:', customer);
+                    const addressSelectionDiv = document.getElementById('address-selection');
+                    addresses = customer.shippingAddresses;
+                    addressSelectionDiv.innerHTML = ''; // Clear any existing addresses
+
+                    addresses.forEach(address => {
+                        const radioButton = document.createElement('div');
+                        radioButton.classList.add('form-check');
+                        const firstName = address.firstName ? address.firstName : '';
+                        const lastName = address.lastName ? address.lastName : '';
+                        const region = address.region ? address.region : '';
+                        const country = address.country ? address.country : '';
+
+                        radioButton.innerHTML = `
+                            <input class="form-check-input mb-2" type="radio" name="addressOption" id="address-${address.id}" value="${address.id}" ${(address.id === customer.defaultShippingAddressId) ? 'checked' : ''} onclick="hideNewAddressForm()">
+                            <label class="form-check-label mb-2" for="address-${address.id}">
+                                ${firstName} ${lastName}, ${region} ${country}
+                            </label>
+                        `;
+                        addressSelectionDiv.appendChild(radioButton);
+                    });
+                    jsonResponseDiv.textContent = JSON.stringify(customer, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+        }
+
+        if (typeof shippingAccordionButton === 'undefined') {
+            let shippingAccordionButton = document.getElementById('shipping-accordion-button');
+            shippingAccordionButton.addEventListener('click', getShippingAddresses);
+        }
+
+        function getCart() {
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = "";
+
+            let cartId = localStorage.getItem('cartId');
+            let url = '/api/carts';
+
+            if (cartId) {
+                url += `/${cartId}`;
+                fetch(url)
+                .then(handleResponse)
+                .then(cart => {
+                    console.log('Success:', cart);
+                    jsonResponseDiv.textContent = JSON.stringify(cart, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
+        }
+        function updateCart() {
+            let code = document.getElementById('code').value.trim();
+
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = '';
+
+            let cartId = localStorage.getItem('cartId');
+            if (cartId) {
+                const formData = {
+                    cartId: cartId,
+                    code: code
+                };
+                fetch('/api/carts/discount-code', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                })
+                .then(handleResponse)
+                .then(data => {
+                    console.log('Success:', data);
+                    jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
+    }
+
+    function updateShippingAddress() {
+
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = '';
+
+            let cartId = localStorage.getItem('cartId');
+
+            if (cartId) {
+                let formData = {
+                    cartId: cartId
+                }
+
+                const selectedRadioButton = document.querySelector('input[name="addressOption"]:checked');
+                if (selectedRadioButton) {
+                    const selectedAddressId = selectedRadioButton.value;
+                    if (selectedAddressId === 'addNewAddress')
+                    {
+                        if(localStorage.getItem('customerId')){
+                            console.log(localStorage.getItem('customerId'));
+                            formData.customerId = localStorage.getItem('customerId');
+                        }
+
+                        formData.address = {
+                            firstName: document.getElementById('firstName').value,
+                            lastName: document.getElementById('lastName').value,
+                            streetNumber: document.getElementById('streetNumber').value,
+                            streetName: document.getElementById('streetName').value,
+                            city: document.getElementById('city').value,
+                            region: document.getElementById('region').value,
+                            country: document.getElementById('country').value,
+                            email: document.getElementById('email').value
+                        };
+                        formData.defaultShippingAddress = document.getElementById('setDefaultShippingAddress').checked;
+                    }
+                    else {
+                        const selectedAddress = addresses.find(address => address.id === selectedAddressId);
+                        formData.address = selectedAddress;
+                    }
+                    fetch('/api/carts/shipping-address', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                    })
+                    .then(handleResponse)
+                    .then(data => {
+                        console.log('Success:', data);
+                        hideNewAddressForm();
+                        jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        jsonResponseDiv.textContent = error.message;
+                    });
+                }
+                else {
+                    jsonResponseDiv.textContent = 'Select an address first.';
+                }
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
+    }
+
+</script>

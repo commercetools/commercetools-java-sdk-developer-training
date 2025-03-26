@@ -103,7 +103,7 @@
         let cartId = localStorage.getItem('cartId');
         localStorage.removeItem('cartId');
         const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = `Cart ${cartId} has been removed from local storage.\nThe cart is not deleted. It can still be fetched by using its id.`;
+        jsonResponseDiv.textContent = `Cart has been removed from local storage.\nThe cart is not deleted.`;
     }
     function getCart() {
 
