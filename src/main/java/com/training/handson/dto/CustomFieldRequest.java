@@ -12,44 +12,18 @@ public class CustomFieldRequest {
     public String getCustomerId() {
         return customerId;
     }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
     public String getInstructions() {
         return instructions;
     }
-
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
-    }
-
     public String getTime() {
         return time;
     }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getOrderNumber() {
         return orderNumber;
     }
-
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
     public String getAddressKey() {return addressKey;}
-
     public void setAddressKey(String addressKey) {this.addressKey = addressKey;}
-
     public boolean isSave() {
         return save;
-    }
-
-    public void setSave(boolean save) {
-        this.save = save;
     }
 }

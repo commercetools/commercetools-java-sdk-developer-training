@@ -70,7 +70,7 @@ public class CustomerService {
                 .key(key)
                 .stores(StoreResourceIdentifierBuilder.of().key(storeKey).build());
 
-        if(country != null && !country.isEmpty())
+        if(StringUtils.isNotEmpty(country))
             builder.addresses(
                     AddressBuilder.of()
                             .key("ct" + System.nanoTime())
@@ -113,12 +113,13 @@ public class CustomerService {
                 .email(email)
                 .password(password);
 
-        if (anonymousCartId != null && !anonymousCartId.isEmpty()){
-            customerSigninBuilder.anonymousCart(CartResourceIdentifierBuilder.of()
-                    .id(anonymousCartId)
-                    .build()
-            )
-                    .anonymousCartSignInMode(AnonymousCartSignInMode.USE_AS_NEW_ACTIVE_CUSTOMER_CART);
+        if (StringUtils.isNotEmpty(anonymousCartId)){
+                customerSigninBuilder
+                        .anonymousCart(CartResourceIdentifierBuilder.of()
+                                    .id(anonymousCartId)
+                                    .build()
+                            )
+                        .anonymousCartSignInMode(AnonymousCartSignInMode.USE_AS_NEW_ACTIVE_CUSTOMER_CART);
         }
 
         return apiRoot
