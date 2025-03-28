@@ -36,10 +36,6 @@ public class ProductService {
                         .priceCurrency("EUR"))
                 .markMatchingVariants(true);
 
-        if (includeFacets != null && includeFacets){
-            builder.facets(createFacets()); // TODO: Implement createFacets()
-        }
-
         // Check if at least one is provided, store and/or a keyword
         if (StringUtils.isNotEmpty(keyword) || StringUtils.isNotEmpty(storeKey)) {
 
@@ -48,23 +44,28 @@ public class ProductService {
 
                 final String storeId = getStoreId(storeKey);
                 builder.query(createSearchQuery(keyword, storeId))
-                        .productProjectionParameters(createProductProjectionParams(storeKey)); // TODO: Implement
+                        .productProjectionParameters(createProductProjectionParams(storeKey));
 
             } else if (StringUtils.isNotEmpty(keyword)) { // Check if only keyword is provided
 
-                builder.query(createFullTextQuery(keyword)); // TODO: Implement createFullTextQuery()
+                builder.query(createFullTextQuery(keyword)); // TODO 2: Implement createFullTextQuery()
 
             } else if (StringUtils.isNotEmpty(storeKey)) { // Check if only store is provided
                 final String storeId = getStoreId(storeKey);
-                builder.query(createStoreQuery(storeId)) // TODO: Implement createStoreQuery()
-                        .productProjectionParameters(createProductProjectionParams(storeKey));
+                builder.query(createStoreQuery(storeId)) // TODO 1: Implement createStoreQuery()
+                        .productProjectionParameters(createProductProjectionParams(storeKey)); // TODO 1: Implement createProductProjectionParams()
             }
         }
 
-        // TODO: Execute API query
-        return CompletableFuture.completedFuture(
-                new ApiHttpResponse<>(501, null, ProductPagedSearchResponse.of())
-        );
+        if (includeFacets != null && includeFacets){
+            builder.facets(createFacets()); // TODO 3: Implement createFacets()
+        }
+
+        return apiRoot
+                .products()
+                .search()
+                .post(builder.build())
+                .execute();
     }
 
     private List<ProductSearchFacetExpression> createFacets(){

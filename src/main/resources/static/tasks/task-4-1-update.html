@@ -41,36 +41,50 @@
                     </div>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="task2">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" >
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2" id="shipping-accordion-button" >
                                 A customer wants to update the shipping address and choose a shipping method.
                             </button>
                         </h2>
                         <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="task2" data-bs-parent="#cartAccordion">
                             <div class="accordion-body">
                                 <span>UPDATE CART - <code>POST /carts/id</code></span><br/><br/>
-                                <div class="d-flex flex-column justify-content-between">
-                                    <div>
-                                        <label for="firstName" class="form-label">First Name</label>
-                                        <input type="text" class="form-control mb-2 me-2" id="firstName" />
+                                <div id="new-address-form">
+                                    <div class="d-flex flex-column justify-content-between">
+                                        <div class="d-flex flex-row mt-4">
+                                            <div class="col-md-4 mb-2"><label for="firstName" class="form-label">First Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="firstName" name="firstName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="lastName" class="form-label">Last Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="lastName" name="lastName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="streetNumber" class="form-label">Street Number</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="streetNumber" name="streetNumber" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="streetName" class="form-label">Street Name</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="streetName" name="streetName" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="region" class="form-label">State</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="region" name="region" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="city" class="form-label">City</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="city" name="city" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="country" class="form-label">Country</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="country" name="country" required></div>
+                                        </div>
+                                        <div class="d-flex flex-row">
+                                            <div class="col-md-4 mb-2"><label for="email" class="form-label">Email</label></div>
+                                            <div class="col-md-8 mb-2"><input type="text" class="form-control" id="email" name="email" required></div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label for="lastName" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control mb-2 me-2" id="lastName" />
-                                    </div>
-                                    <div>
-                                        <label for="country" class="form-label">Country</label>
-                                        <input type="text" class="form-control mb-2 me-2" id="country" />
-                                    </div>
-                                    <div>
-                                        <label for="email" class="form-label">Email Address</label>
-                                        <input type="text" class="form-control mb-2 me-2" id="email" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <input type="checkbox" class="form-check-input mb-2" id="saveAddress" />
-                                        <label class="form-check-label" for="saveAddress">Set as default shipping address</label>
-                                    </div>
-                                    <button class="btn btn-primary" onclick="updateShippingAddress()">Update Shipping Address</button>
                                 </div>
+                                <button class="btn btn-primary" onclick="updateShippingAddress()">Add Shipping Address</button>
                             </div>
                         </div>
                     </div>
@@ -78,9 +92,11 @@
 
                 <br/>
                 <main class="d-flex flex-nowrap">
-                    <div class="row h-100">
+                    <div class="row h-100 w-100">
                         <div class="d-flex col-md-12">
-                            <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            <div class="container col-md-12">
+                                <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -91,98 +107,106 @@
 
 <script>
 
-    function getCart() {
-        const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = "";
+        function getCart() {
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = "";
 
-        let cartId = localStorage.getItem('cartId');
-        let url = '/api/carts';
+            let cartId = localStorage.getItem('cartId');
+            let url = '/api/carts';
 
-        if (cartId) {
-            url += `/${cartId}`;
-            fetch(url)
-            .then(handleResponse)
-            .then(cart => {
-                console.log('Success:', cart);
-                jsonResponseDiv.textContent = JSON.stringify(cart, null, 2);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                jsonResponseDiv.textContent = error.message;
-            });
+            if (cartId) {
+                url += `/${cartId}`;
+                fetch(url)
+                .then(handleResponse)
+                .then(cart => {
+                    console.log('Success:', cart);
+                    jsonResponseDiv.textContent = JSON.stringify(cart, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
         }
-        else {
-                jsonResponseDiv.textContent = 'No current active cart';
-        }
+        function updateCart() {
+            let code = document.getElementById('code').value.trim();
+
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = '';
+
+            let cartId = localStorage.getItem('cartId');
+            if (cartId) {
+                const formData = {
+                    cartId: cartId,
+                    code: code
+                };
+                fetch('/api/carts/discount-code', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                })
+                .then(handleResponse)
+                .then(data => {
+                    console.log('Success:', data);
+                    jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
     }
-    function updateCart() {
-        let code = document.getElementById('code').value.trim();
 
-        const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = '';
+    function updateShippingAddress() {
 
-        let cartId = localStorage.getItem('cartId');
-        if (cartId) {
-            const formData = {
-                cartId: cartId,
-                code: code
-            };
-            fetch('/api/carts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-            })
-            .then(handleResponse)
-            .then(data => {
-                console.log('Success:', data);
-                jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                jsonResponseDiv.textContent = error.message;
-            });
-        }
-        else {
-                jsonResponseDiv.textContent = 'No current active cart';
-        }
-}
+            const jsonResponseDiv = document.getElementById('json-response');
+            jsonResponseDiv.textContent = '';
 
-function updateShippingAddress() {
+            let cartId = localStorage.getItem('cartId');
 
-        const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = '';
+            if (cartId) {
+                let formData = {
+                    cartId: cartId,
+                    address: {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        streetNumber: document.getElementById('streetNumber').value,
+                        streetName: document.getElementById('streetName').value,
+                        city: document.getElementById('city').value,
+                        region: document.getElementById('region').value,
+                        country: document.getElementById('country').value,
+                        email: document.getElementById('email').value
+                    }
+                };
 
-        let cartId = localStorage.getItem('cartId');
-        if (cartId) {
-            const formData = {
-                cartId: cartId,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                country: document.getElementById('country').value,
-                email: document.getElementById('email').value,
-            };
-            fetch('/api/carts/shipping-address', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-            })
-            .then(handleResponse)
-            .then(data => {
-                console.log('Success:', data);
-                jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                jsonResponseDiv.textContent = error.message;
-            });
-        }
-        else {
-                jsonResponseDiv.textContent = 'No current active cart';
-        }
-}
+                fetch('/api/carts/shipping-address', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                })
+                .then(handleResponse)
+                .then(data => {
+                    console.log('Success:', data);
+                    jsonResponseDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    jsonResponseDiv.textContent = error.message;
+                });
+            }
+            else {
+                    jsonResponseDiv.textContent = 'No current active cart';
+            }
+    }
 
 </script>

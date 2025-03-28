@@ -103,7 +103,7 @@
         let cartId = localStorage.getItem('cartId');
         localStorage.removeItem('cartId');
         const jsonResponseDiv = document.getElementById('json-response');
-        jsonResponseDiv.textContent = `Cart ${cartId} has been removed from local storage.\nThe cart is not deleted. It can still be fetched by using its id.`;
+        jsonResponseDiv.textContent = `Cart has been removed from local storage.\nThe cart is not deleted.`;
     }
     function getCart() {
 
@@ -132,9 +132,6 @@
     }
 
     function getProducts() {
-        let keyword = document.getElementById('keyword').value.trim();
-        const storeKey = document.getElementById('store').value.trim();
-        const includeFacets = document.getElementById('includeFacets').checked;
         const jsonResponseDiv = document.getElementById('json-response');
         const resultsDiv = document.getElementById('results');
         const facetsDiv = document.getElementById('facets');
@@ -142,6 +139,11 @@
         resultsDiv.innerHTML = '';
         facetsDiv.innerHTML = '';
         jsonResponseDiv.textContent = '';
+
+        let keyword = document.getElementById('keyword').value.trim();
+        const storeKey = document.getElementById('store').value.trim();
+        const includeFacets = document.getElementById('includeFacets').checked;
+
 
         let url = '/api/products?';
 
@@ -193,14 +195,20 @@
                             const addToCartButton = productDiv.querySelector('.add-to-cart');
                             if (addToCartButton) {
                                 addToCartButton.addEventListener('click', function() {
-                                    let cartId = localStorage.getItem('cartId');
+
                                     const formData = {
                                         sku: result.productProjection.masterVariant.sku,
                                         quantity: 1
                                     };
 
+                                    let cartId = localStorage.getItem('cartId');
                                     if (cartId) {
                                         formData.cartId = cartId;
+                                    }
+
+                                    let customerId = localStorage.getItem('customerId');
+                                    if (customerId) {
+                                        formData.customerId = customerId;
                                     }
 
                                     fetch('/api/carts', {
