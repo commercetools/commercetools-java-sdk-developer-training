@@ -44,9 +44,11 @@
                     </div>
                 </div>
                 <main class="d-flex flex-nowrap">
-                    <div class="row h-100">
+                    <div class="row h-100 w-100">
                         <div class="d-flex col-md-12">
-                            <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            <div class="container col-md-12">
+                                <pre id="json-response" class="mt-1 flex-fill d-flex overflow-auto"></pre>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -80,6 +82,7 @@
 
             jsonResponseDiv.textContent = JSON.stringify(orderData, null, 2);
             localStorage.removeItem('cartId');
+            localStorage.removeItem('customerId');
         })
         .catch((error) => {
             console.error('Error:', error);

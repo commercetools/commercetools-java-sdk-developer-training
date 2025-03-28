@@ -2,7 +2,7 @@ package com.training.handson.controllers;
 
 import com.commercetools.api.models.cart.Cart;
 import com.training.handson.dto.AddressRequest;
-import com.training.handson.dto.UpdateCartRequest;
+import com.training.handson.dto.CartUpdateRequest;
 import com.training.handson.services.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,43 +19,23 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @GetMapping("/{cartId}")
-    public CompletableFuture<ResponseEntity<Cart>> getCart(@PathVariable String cartId) {
-        return cartService.getCartById(cartId).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Cart>> getCart(@PathVariable String id) {
+        return cartService.getCartById(id).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping
-    public CompletableFuture<ResponseEntity<Cart>> createCart(
-            @RequestBody UpdateCartRequest updateCartRequest) {
+    public CompletableFuture<ResponseEntity<Cart>> updateCart(
+            @RequestBody CartUpdateRequest cartUpdateRequest) {
 
-        String cartId = updateCartRequest.getCartId();
-        String sku = updateCartRequest.getSku();
-        String code = updateCartRequest.getCode();
-        Long quantity = updateCartRequest.getQuantity();
-        String supplyChannel = updateCartRequest.getSupplyChannel();
-        String distributionChannel = updateCartRequest.getDistributionChannel();
+        return cartService.updateCart(cartUpdateRequest).thenApply(ResponseConverter::convert);
+    }
 
-        if(cartId == null || cartId.isEmpty()){
-            return cartService.createAnonymousCart(
-                    sku,
-                    quantity
-//                supplyChannel,
-//                distributionChannel
-            ).thenApply(ResponseConverter::convert);
-        }
-        if( code != null ) {
-            return cartService.addDiscountToCart(
-                    cartId,
-                    code
-            ).thenApply(ResponseConverter::convert);
-        }
-        return cartService.addProductToCartBySkusAndChannel(
-                cartId,
-                sku,
-                quantity
-//                supplyChannel,
-//                distributionChannel
-        ).thenApply(ResponseConverter::convert);
+    @PostMapping("/discount-code")
+    public CompletableFuture<ResponseEntity<Cart>> addDiscountCode(
+            @RequestBody CartUpdateRequest cartUpdateRequest) {
+
+        return cartService.addDiscountToCart(cartUpdateRequest.getCartId(), cartUpdateRequest.getCode()).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping("/shipping-address")

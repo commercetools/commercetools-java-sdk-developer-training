@@ -4,7 +4,7 @@ ctp.clientId=
 ctp.clientSecret=
 ctp.authUrl=
 ctp.apiUrl=
-ctp.scopes=
+ctp.scopes=manage_project:project-key
 
 # ADD API Client for Import API below
 import.projectKey=

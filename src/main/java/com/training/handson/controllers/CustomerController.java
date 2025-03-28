@@ -26,9 +26,15 @@ public class CustomerController {
         return customerService.createCustomer(customerCreateRequest).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/{customerKey}")
-    public CompletableFuture<ResponseEntity<Customer>> getCustomer(@PathVariable String customerKey) {
-        return customerService.getCustomerByKey(customerKey).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerById(@PathVariable String id) {
+        return customerService.getCustomerById(id).thenApply(ResponseConverter::convert);
+    }
+
+    @GetMapping("/key={key}")
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerByKey(
+            @PathVariable String key) {
+        return customerService.getCustomerByKey(key).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping("/login")

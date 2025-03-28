@@ -4,7 +4,10 @@ import com.commercetools.api.models.store.Store;
 import com.commercetools.api.models.store.StorePagedQueryResponse;
 import com.training.handson.services.StoreService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,9 +21,9 @@ public class StoreController {
         this.storeService = storeService;
     }
 
-    @GetMapping("/{storeId}")
-    public CompletableFuture<ResponseEntity<Store>> getStore(@PathVariable String storeId) {
-        return storeService.getStoreById(storeId).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Store>> getStore(@PathVariable String id) {
+        return storeService.getStoreById(id).thenApply(ResponseConverter::convert);
     }
 
     @GetMapping()
