@@ -21,9 +21,9 @@ public class StoreController {
         this.storeService = storeService;
     }
 
-    @GetMapping("/{storeId}")
-    public CompletableFuture<ResponseEntity<Store>> getStore(@PathVariable String storeId) {
-        return storeService.getStoreById(storeId).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Store>> getStore(@PathVariable String id) {
+        return storeService.getStoreById(id).thenApply(ResponseConverter::convert);
     }
 
     @GetMapping()

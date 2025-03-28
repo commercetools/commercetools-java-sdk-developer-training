@@ -13,7 +13,7 @@ import.projectKey=
 import.clientId=
 import.clientSecret=
 import.authUrl=https://auth.europe-west1.gcp.commercetools.com
-import.apiUrl=https://api.europe-west1.gcp.commercetools.com
+import.apiUrl=https://import.europe-west1.gcp.commercetools.com
 import.scopes=manage_products:project-key manage_import_containers:project-key
 
 # UPDATE Store Key here

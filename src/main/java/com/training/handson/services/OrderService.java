@@ -64,21 +64,17 @@ public class OrderService {
         final String orderNumber = customFieldRequest.getOrderNumber();
 
         return getOrderByOrderNumber(orderNumber)
-                .thenComposeAsync(orderApiHttpResponse -> {
-                    if (customFieldRequest.isSave() && orderApiHttpResponse.getBody().getCustomerId() != null) {
-                        customFieldRequest.setCustomerId(orderApiHttpResponse.getBody().getCustomerId());
-                        customerService.setCustomFields(customFieldRequest);
-                    }
-
+                .thenApply(ApiHttpResponse::getBody)
+                .thenComposeAsync(order -> {
                     return apiRoot
                             .inStore(storeKey)
                             .orders()
                             .withOrderNumber(orderNumber)
                             .post(
                                     updateBuilder -> updateBuilder
-                                            .version(orderApiHttpResponse.getBody().getVersion())
-                                            .plusActions(orderUpdateActionBuilder -> orderUpdateActionBuilder.setCustomTypeBuilder()
-                                                    .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("delivery-instructions"))
+                                            .version(order.getVersion())
+                                            .plusActions(actionBuilder -> actionBuilder.setShippingAddressCustomTypeBuilder()
+                                                    .type(typeResourceIdentifierBuilder -> typeResourceIdentifierBuilder.key("ct-delivery-instructions"))
                                                     .fields(fieldContainerBuilder -> fieldContainerBuilder
                                                             .addValue("instructions", customFieldRequest.getInstructions())
                                                             .addValue("time", customFieldRequest.getTime())

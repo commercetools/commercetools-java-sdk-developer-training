@@ -19,9 +19,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/{orderId}")
-    public CompletableFuture<ResponseEntity<Order>> getOrder(@PathVariable String orderId) {
-        return orderService.getOrderById(orderId).thenApply(ResponseConverter::convert);
+    @GetMapping("/{id}")
+    public CompletableFuture<ResponseEntity<Order>> getOrder(@PathVariable String id) {
+        return orderService.getOrderById(id).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping

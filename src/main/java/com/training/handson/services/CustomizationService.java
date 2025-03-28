@@ -62,7 +62,8 @@ public class CustomizationService {
                     .name(lsb -> lsb.values(nameForType))
                     .resourceTypeIds(
                         ResourceTypeId.CUSTOMER,
-                        ResourceTypeId.ORDER
+                        ResourceTypeId.ORDER,
+                        ResourceTypeId.ADDRESS
                     )
                     .fieldDefinitions(definitions)
             ).execute();
