@@ -32,17 +32,17 @@ public class ProductService {
             String storeKey,
             Boolean includeFacets) {
         ProductSearchRequestBuilder builder = ProductSearchRequestBuilder.of()
-                .sort(
-                        SearchSortingBuilder.of()
+                .withSort(
+                        searchSortingBuilder -> searchSortingBuilder
                                 .field("variants.prices.centAmount")
                                 .mode(SearchSortMode.MAX)
                                 .order(SearchSortOrder.ASC)
-                                .build()
+
                 )
-                .productProjectionParameters(ProductSearchProjectionParamsBuilder.of()
+                .productProjectionParameters(productSearchProjectionParamsBuilder -> productSearchProjectionParamsBuilder
                         .priceCurrency("EUR")
                         .priceCountry("DE")
-                        .build())
+                        )
                 .markMatchingVariants(true);
 
         if (includeFacets != null && includeFacets){
@@ -78,26 +78,24 @@ public class ProductService {
     private List<ProductSearchFacetExpression> createFacets(){
         return Arrays.asList(ProductSearchFacetDistinctExpressionBuilder.of()
                         .distinct(
-                                ProductSearchFacetDistinctValueBuilder.of()
+                                productSearchFacetDistinctValueBuilder -> productSearchFacetDistinctValueBuilder
                                         .name("Color")
                                         .field("variants.attributes.color")
                                         .fieldType(SearchFieldType.LTEXT)
                                         .language("en-US")
                                         .level(ProductSearchFacetCountLevelEnum.VARIANTS)
                                         .scope(ProductSearchFacetScopeEnum.ALL)
-                                        .build()
                         )
                         .build(),
                 ProductSearchFacetDistinctExpressionBuilder.of()
                         .distinct(
-                                ProductSearchFacetDistinctValueBuilder.of()
+                                productSearchFacetDistinctValueBuilder -> productSearchFacetDistinctValueBuilder
                                         .name("Finish")
                                         .field("variants.attributes.finish")
                                         .fieldType(SearchFieldType.LTEXT)
                                         .language("en-US")
                                         .level(ProductSearchFacetCountLevelEnum.VARIANTS)
                                         .scope(ProductSearchFacetScopeEnum.ALL)
-                                        .build()
                         )
                         .build()
         );
@@ -118,22 +116,20 @@ public class ProductService {
 
     private SearchQuery createFullTextQuery(String keyword) {
         return SearchFullTextExpressionBuilder.of()
-                .fullText(SearchFullTextValueBuilder.of()
+                .fullText(searchFullTextValueBuilder -> searchFullTextValueBuilder
                         .field("name")
                         .value(keyword)
                         .language("en-US")
-                        .mustMatch(SearchMatchType.ANY)
-                        .build())
+                        .mustMatch(SearchMatchType.ANY))
                 .build();
     }
 
     private SearchQuery createStoreQuery(String storeId) {
         return SearchExactExpressionBuilder.of()
-                .exact(SearchExactValueBuilder.of()
+                .exact(searchExactValueBuilder -> searchExactValueBuilder
                         .field("stores")
                         .value(storeId)
-                        .fieldType(SearchFieldType.SET_REFERENCE)
-                        .build())
+                        .fieldType(SearchFieldType.SET_REFERENCE))
                 .build();
     }
 

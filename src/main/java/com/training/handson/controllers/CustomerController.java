@@ -2,7 +2,6 @@ package com.training.handson.controllers;
 
 import com.commercetools.api.models.customer.Customer;
 import com.commercetools.api.models.customer.CustomerSignInResult;
-import com.commercetools.api.models.product_search.ProductPagedSearchResponse;
 import com.training.handson.dto.CustomerCreateRequest;
 import com.training.handson.services.CustomerService;
 import org.springframework.http.ResponseEntity;

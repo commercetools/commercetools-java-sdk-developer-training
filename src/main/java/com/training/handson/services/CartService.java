@@ -3,11 +3,7 @@ package com.training.handson.services;
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.cart.*;
 import com.commercetools.api.models.common.Address;
-import com.commercetools.api.models.common.AddressBuilder;
-import com.commercetools.api.models.common.AddressDraft;
-import com.commercetools.api.models.customer.Customer;
 import com.commercetools.api.models.shipping_method.ShippingMethod;
-import com.commercetools.api.models.store.Store;
 import com.training.handson.dto.AddressRequest;
 import com.training.handson.dto.CartUpdateRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
@@ -284,9 +280,7 @@ public class CartService {
                         .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Cart>> setShippingMethod(final ApiHttpResponse<Cart> cartApiHttpResponse) {
-
-        final Cart cart = cartApiHttpResponse.getBody();
+    public CompletableFuture<ApiHttpResponse<Cart>> setShippingMethod(final Cart cart) {
 
         final ShippingMethod shippingMethod =
             apiRoot

@@ -1,7 +1,6 @@
 package com.training.handson.dto;
 
 import com.commercetools.api.models.common.Address;
-import com.commercetools.api.models.common.BaseAddress;
 
 public class AddressRequest {
 

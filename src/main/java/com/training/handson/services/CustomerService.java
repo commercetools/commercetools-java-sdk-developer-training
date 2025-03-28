@@ -2,19 +2,15 @@ package com.training.handson.services;
 
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.cart.CartResourceIdentifierBuilder;
-import com.commercetools.api.models.common.Address;
 import com.commercetools.api.models.common.AddressBuilder;
 import com.commercetools.api.models.customer.*;
-import com.commercetools.api.models.customer_group.CustomerGroup;
 import com.commercetools.api.models.store.StoreResourceIdentifierBuilder;
-import com.training.handson.dto.CustomFieldRequest;
 import com.training.handson.dto.CustomerCreateRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @Service
