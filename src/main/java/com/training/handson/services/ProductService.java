@@ -28,8 +28,25 @@ public class ProductService {
         ProductSearchRequestBuilder builder = ProductSearchRequestBuilder.of()
                 .withSort(ssb -> ssb
                         .field("variants.prices.centAmount")
-                            .mode(SearchSortMode.MIN)
-                            .order(SearchSortOrder.ASC)
+                        .mode(SearchSortMode.MIN)
+                        .order(SearchSortOrder.ASC)
+                        .filter(SearchAndExpressionBuilder.of()
+                                .and(
+                                    Arrays.asList(SearchExactExpressionBuilder.of().exact(
+                                            SearchExactValueBuilder.of()
+                                                    .field("variants.prices.currencyCode")
+                                                    .fieldType(SearchFieldType.TEXT)
+                                                    .value("EUR").build()
+                                        ).build(),
+                                        SearchExactExpressionBuilder.of().exact(
+                                            SearchExactValueBuilder.of()
+                                                    .field("variants.prices.country")
+                                                    .fieldType(SearchFieldType.TEXT)
+                                                    .value("DE").build()
+                                        ).build()
+                                    )
+                                ).build()
+                        )
                 )
                 .productProjectionParameters(pppb -> pppb
                         .priceCountry("DE")
