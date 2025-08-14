@@ -31,9 +31,6 @@ public class Config {
     @Value("${ctp.projectKey}")
     private String projectKey;
 
-    @Value("${storeKey}")
-    private String storeKey;
-
 
     @Bean
     public ProjectApiRoot projectApiRoot() {
