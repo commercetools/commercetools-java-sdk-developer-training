@@ -10,8 +10,6 @@ import com.commercetools.importapi.models.productdrafts.PriceDraftImportBuilder;
 import com.commercetools.importapi.models.productdrafts.ProductDraftImport;
 import com.commercetools.importapi.models.productdrafts.ProductDraftImportBuilder;
 import com.commercetools.importapi.models.productdrafts.ProductVariantDraftImportBuilder;
-import com.commercetools.importapi.models.products.ProductImport;
-import com.commercetools.importapi.models.products.ProductImportBuilder;
 import io.vrap.rmf.base.client.ApiHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +33,9 @@ public class ImportService {
 
         // TODO: Import products from the csv file
         // TODO: Update and use getProductImportsFromCsv method to parse the csv file
-        return CompletableFuture.completedFuture(
-                new ApiHttpResponse<>(501, null, ImportResponse.of())
-        );
+            return CompletableFuture.completedFuture(
+                    new ApiHttpResponse<>(501, null, ImportResponse.of())
+            );
     }
 
     private List<ProductDraftImport> getProductDraftImportsFromCsv(final MultipartFile csvFile) {
@@ -67,10 +65,10 @@ public class ImportService {
                                             .value(MoneyBuilder.of()
                                                     .currencyCode(values.get(5))
                                                     .centAmount((long) (Double.parseDouble(values.get(6)) * 100))
-                                                    .build())
                                             .build())
                                     .build())
-                            .build();
+                            .build())
+                        .build();
                     productImports.add(productImport);
                 }
                 else {
@@ -93,6 +91,5 @@ public class ImportService {
                         .get()
                         .execute();
     }
-
 
 }

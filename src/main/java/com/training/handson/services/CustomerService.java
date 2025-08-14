@@ -16,11 +16,9 @@ public class CustomerService {
     @Autowired
     private ProjectApiRoot apiRoot;
 
-    @Autowired
-    private String storeKey;
-
-
-    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerByKey(String customerKey) {
+    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerByKey(
+            final String storeKey,
+            final String customerKey) {
         return apiRoot
                 .inStore(storeKey)
                 .customers()
@@ -29,7 +27,9 @@ public class CustomerService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerById(String customerId) {
+    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerById(
+            final String storeKey,
+            String customerId) {
         return apiRoot
                 .inStore(storeKey)
                 .customers()
@@ -40,6 +40,7 @@ public class CustomerService {
 
 
     public CompletableFuture<ApiHttpResponse<CustomerSignInResult>> createCustomer(
+            final String storeKey,
             final CustomerCreateRequest customerCreateRequest) {
 
         // TODO: Create (signup) a customer and assign anonymous cart in the request to them
@@ -49,6 +50,7 @@ public class CustomerService {
     }
 
     public CompletableFuture<ApiHttpResponse<CustomerSignInResult>> loginCustomer(
+            final String storeKey,
             final CustomerCreateRequest customerCreateRequest) {
 
         // TODO: Login (signin) a customer and assign anonymous cart in the request to them

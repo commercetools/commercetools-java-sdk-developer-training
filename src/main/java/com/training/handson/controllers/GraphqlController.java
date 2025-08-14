@@ -5,14 +5,14 @@ import com.commercetools.graphql.api.types.OrderQueryResult;
 import com.training.handson.services.GraphqlService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/graphql")
+@RequestMapping("/api/graphql/")
 public class GraphqlController {
 
     private final GraphqlService graphqlService;
@@ -21,9 +21,10 @@ public class GraphqlController {
         this.graphqlService = graphqlService;
     }
 
-    @GetMapping("/orders/{customerEmail}")
-    public CompletableFuture<ResponseEntity<GraphQLResponse<OrderQueryResult>>> getOrder(@PathVariable String customerEmail) {
-        return graphqlService.getOrderSummaryByEmail(customerEmail).thenApply(ResponseConverter::convert);
+    @GetMapping("orders")
+    public CompletableFuture<ResponseEntity<GraphQLResponse<OrderQueryResult>>> getOrders(
+            @RequestParam String email) {
+        return graphqlService.getOrdersByEmail(email).thenApply(ResponseConverter::convert);
     }
 
 }

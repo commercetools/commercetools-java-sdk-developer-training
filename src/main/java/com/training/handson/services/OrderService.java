@@ -1,6 +1,7 @@
 package com.training.handson.services;
 
 import com.commercetools.api.client.ProjectApiRoot;
+import com.commercetools.api.models.cart.Cart;
 import com.commercetools.api.models.order.Order;
 import com.training.handson.dto.CustomFieldRequest;
 import com.training.handson.dto.OrderRequest;
@@ -17,32 +18,23 @@ public class OrderService {
     private ProjectApiRoot apiRoot;
 
     @Autowired
-    private String storeKey;
-
-    @Autowired
     private CustomerService customerService;
 
-    public CompletableFuture<ApiHttpResponse<Order>> createOrder(
-            final OrderRequest orderRequest) {
+    public CompletableFuture<ApiHttpResponse<Order>> getOrderById(
+            final String storeKey,
+            final String orderId) {
 
-        // TODO: Create an order using the cardId and version in the request
-        return CompletableFuture.completedFuture(
-                new ApiHttpResponse<>(501, null, Order.of())
-        );
+            return apiRoot
+                    .inStore(storeKey)
+                    .orders()
+                    .withId(orderId)
+                    .get()
+                    .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Order>> setCustomFields(
-            final CustomFieldRequest customFieldRequest) {
-
-        final String orderNumber = customFieldRequest.getOrderNumber();
-
-        // TODO: Update the order with custom delivery instructions
-        return CompletableFuture.completedFuture(
-                new ApiHttpResponse<>(501, null, Order.of())
-        );
-    }
-
-    public CompletableFuture<ApiHttpResponse<Order>> getOrderByOrderNumber(final String orderNumber) {
+    public CompletableFuture<ApiHttpResponse<Order>> getOrderByOrderNumber(
+            final String storeKey,
+            final String orderNumber) {
 
         return apiRoot
                 .inStore(storeKey)
@@ -52,14 +44,41 @@ public class OrderService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Order>> getOrderById(final String orderId) {
+    public CompletableFuture<ApiHttpResponse<Order>> createOrder(
+            final String storeKey,
+            final OrderRequest orderRequest) {
 
-        return apiRoot
+        // TODO: Create an order using the cardId and version in the request
+            return CompletableFuture.completedFuture(
+                    new ApiHttpResponse<>(501, null, Order.of())
+            );
+    }
+
+    public CompletableFuture<ApiHttpResponse<Order>> setCustomFields(
+            final String storeKey,
+            final String orderNumber,
+            final CustomFieldRequest customFieldRequest) {
+
+        // TODO: Update the order with custom delivery instructions
+        return CompletableFuture.completedFuture(
+                new ApiHttpResponse<>(501, null, Order.of())
+        );
+    }
+
+    public CompletableFuture<ApiHttpResponse<Cart>> replicateOrderByOrderNumber(
+            final String storeKey,
+            final String orderNumber) {
+
+        return getOrderByOrderNumber(storeKey, orderNumber)
+            .thenComposeAsync(orderApiHttpResponse -> apiRoot
                 .inStore(storeKey)
-                .orders()
-                .withId(orderId)
-                .get()
-                .execute();
+                .carts()
+                .replicate()
+                .post(
+                        replicaCartDraftBuilder -> replicaCartDraftBuilder
+                                .reference(referenceBuilder -> referenceBuilder.cartBuilder().id(orderApiHttpResponse.getBody().getCart().getId()))
+                )
+                .execute());
     }
 
 }
