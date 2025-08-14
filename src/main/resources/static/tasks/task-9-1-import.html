@@ -24,7 +24,7 @@
             data-bs-parent="#typeAccordion"
           >
             <div class="accordion-body">
-              <span>IMPORT PRODUCTS - <code>POST /import</code></span
+              <span>IMPORT PRODUCTS - <code>POST /api/imports/products?file=</code></span
               ><br /><br />
               <div class="row">
                 <div class="col-8">
@@ -91,7 +91,7 @@
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch('/api/import-products', {
+    fetch('/api/imports/products', {
       method: 'POST',
       body: formData,
     })

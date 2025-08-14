@@ -27,7 +27,7 @@
             <div class="accordion-body">
               <span
                 >CREATE/UPDATE CUSTOMOBJECTS -
-                <code>POST /extentions/custom-objects</code></span
+                <code>POST /api/extentions/custom-objects</code></span
               ><br /><br />
               <div class="mb-3">
                 <label for="user" class="form-label">Name</label>
@@ -50,7 +50,7 @@
 
               <button
                 class="btn btn-primary"
-                onclick="createUpdateSubscribers()"
+                onclick="subscribe()"
               >
                 Subscribe
               </button>
@@ -78,7 +78,7 @@
               <div class="accordion-body">
                 <span
                   >GET CUSTOM OBJECT -
-                  <code>GET /extensions/custom-objects</code></span
+                  <code>GET /api/extensions/custom-objects/${container}/${key}</code></span
                 ><br /><br />
                 <button class="btn btn-primary" onclick="getCustomObject()">
                   Get Subscribers
@@ -107,55 +107,65 @@
 </div>
 
 <script>
-  function createUpdateSubscribers() {
-    let email = document.getElementById('email').value.trim();
-    let user = document.getElementById('user').value.trim();
-    const results = document.getElementById('results');
+  function subscribe() {
+      let email = document.getElementById('email').value.trim();
+      let user = document.getElementById('user').value.trim();
+      const results = document.getElementById('results');
 
-    results.textContent = '';
+      results.textContent = '';
 
-    let url = `/api/extensions/custom-objects`;
+      let container = "email-lists";
+      let key = "promotional-email-subscribers";
 
-    var formData = {};
+      let url = `/api/extensions/custom-objects`;
 
-    if (user && email) {
-      formData.userName = user;
-      formData.email = email;
+      var formData = {};
+
+      if (user && email) {
+          url += `/${container}/${key}`;
+          formData[user] = email;
+      }
+      else {
+        formData.container = container;
+        formData.key = key;
+      }
 
       fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
       })
-        .then(handleResponse)
-        .then((data) => {
-          console.log('Success:', data);
-          results.textContent = 'Thanks for subscribing to our newsletter.';
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-          results.textContent = error.message;
-        });
-    } else results.textContent = 'enter your name and email.';
-  }
-
-  function getCustomObject() {
-    const results = document.getElementById('results');
-    results.textContent = '';
-
-    const url = `/api/extensions/custom-objects`;
-
-    fetch(url)
       .then(handleResponse)
-      .then((data) => {
-        console.log('Success:', data);
-        results.textContent = JSON.stringify(data, null, 2);
+      .then(data => {
+          console.log('Success:', data);
+          results.textContent = "Thanks for subscribing to our newsletter.";
       })
       .catch((error) => {
-        console.error('Error:', error);
-        results.textContent = error.message;
+          console.error('Error:', error);
+          results.textContent = error.message;
       });
+  }
+  function getCustomObject() {
+
+      const results = document.getElementById('results');
+      results.textContent = '';
+
+      var container = "email-lists";
+      var key = "promotional-email-subscribers";
+
+      const url = `/api/extensions/custom-objects/${container}/${key}`;
+
+      fetch(url)
+          .then(handleResponse)
+          .then(data => {
+              console.log('Success:', data);
+              results.textContent = JSON.stringify(data, null, 2);
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+              results.textContent = error.message;
+          });
   }
 </script>

@@ -81,7 +81,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>GET /products?keyword=keyword</code></span>
+                <span><code>GET /api/products/search?keyword=keyword</code></span>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>GET /products?facets=true</code></span>
+                <span><code>GET /api/products/search?keyword=keyword&facets=true</code></span>
               </div>
             </div>
           </div>
@@ -188,33 +188,7 @@
       if (storeKey) params.set('storeKey', storeKey);
       if (includeFacets) params.set('facets', 'true');
 
-      const url = `/api/products?${params.toString()}`;
-
-      // let url = '/api/products?';
-
-      // if(locale) {
-      //   url += `locale=${locale}`;
-      // }
-
-      // if(currency) {
-      //   url += (url.includes('?') ? '&' : '') + `currency=${currency}`;
-      // }
-
-      // if(country) {
-      //   url += (url.includes('?') ? '&' : '') + `country=${country}`;
-      // }
-
-      // if (keyword) {
-      //   url += (url.includes('?') ? '&' : '') + `keyword=${keyword}`;
-      // }
-
-      // if (storeKey) {
-      //   url += (url.includes('?') ? '&' : '') + `storeKey=${storeKey}`;
-      // }
-
-      // if (includeFacets) {
-      //   url += (url.includes('?') ? '&' : '') + `facets=true`;
-      // }
+      const url = `/api/products/search?${params.toString()}`;
 
       console.log(url);
       fetch(url)

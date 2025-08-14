@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class CustomizationService {
+public class ExtensionsService {
 
     @Autowired
     private ProjectApiRoot apiRoot;
@@ -79,41 +79,37 @@ public class CustomizationService {
                 .withWhere("container=\""+container+"\"")
                 .addWhere("key=\""+key+"\"")
                 .execute()
-                .thenApply(response -> {
-                    return response.getBody() != null;
-                })
-                .exceptionally(ex -> {
-                    return false;
-                });
+                .thenApply(response -> response.getStatusCode() == 200)
+                .exceptionally(ex -> false);
     }
 
     public CompletableFuture<ApiHttpResponse<CustomObject>> createCustomObject(
             final CustomObjectRequest customObjectRequest) {
 
         Map<String, Object> jsonObject = new HashMap<>();
-        final String container = customObjectRequest.getContainer();
-        final String key = customObjectRequest.getKey();
+        String container = customObjectRequest.getContainer();
+        String key = customObjectRequest.getKey();
 
-        return getCustomObjectWithContainerAndKey(container, key)
-                .handle((customObjectApiHttpResponse, throwable) -> {
-                    if (throwable != null){
+        return existsCustomObjectWithContainerAndKey(container, key)
+                .thenCompose(exists -> {
+                    if (!exists) {
+                        System.out.println("Creating custom object: " + container + " / " + key);
                         return apiRoot.customObjects()
-                                .post(customObjectDraftBuilder -> customObjectDraftBuilder
-                                        .container(customObjectRequest.getContainer())
-                                        .key(customObjectRequest.getKey())
+                                .post(draftBuilder -> draftBuilder
+                                        .container(container)
+                                        .key(key)
                                         .value(jsonObject))
                                 .execute();
+                    } else {
+                        System.out.println("Custom object already exists: " + container + " / " + key);
+                        return getCustomObjectWithContainerAndKey(container, key);
                     }
-                    else {
-                        return CompletableFuture.completedFuture(customObjectApiHttpResponse);
-                    }
-                }).thenCompose(apiHttpResponseCompletableFuture -> apiHttpResponseCompletableFuture);
+                });
     }
 
     public CompletableFuture<ApiHttpResponse<CustomObject>> getCustomObjectWithContainerAndKey(
             final String container,
             final String key) {
-
 
         return apiRoot
                 .customObjects()

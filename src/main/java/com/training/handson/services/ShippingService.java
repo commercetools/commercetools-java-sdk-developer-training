@@ -16,9 +16,6 @@ public class ShippingService {
     @Autowired
     private ProjectApiRoot apiRoot;
 
-    @Autowired
-    private String storeKey;
-
     public CompletableFuture<ApiHttpResponse<ShippingMethodPagedQueryResponse>> getShippingMethods() {
         return apiRoot
                 .shippingMethods()
@@ -27,7 +24,7 @@ public class ShippingService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<ShippingMethod>> getShippingMethodByKey(String key) {
+    public CompletableFuture<ApiHttpResponse<ShippingMethod>> getShippingMethodByKey(final String key) {
         return apiRoot
                 .shippingMethods()
                 .withKey(key)
@@ -36,7 +33,7 @@ public class ShippingService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<ShippingMethodPagedQueryResponse>> getShippingMethodsByCountry(String countryCode) {
+    public CompletableFuture<ApiHttpResponse<ShippingMethodPagedQueryResponse>> getShippingMethodsByCountry(final String countryCode) {
         return apiRoot
                 .shippingMethods()
                 .matchingLocation()
@@ -46,14 +43,24 @@ public class ShippingService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<JsonNode>> checkShippingMethodExistence(String key) {
+    public CompletableFuture<ApiHttpResponse<ShippingMethodPagedQueryResponse>> getShippingMethodsByInStoreCart(
+            final String storeKey,
+            final String cartId) {
+        return apiRoot
+                .inStore(storeKey)
+                .shippingMethods()
+                .matchingCart()
+                .get()
+                .withCartId(cartId)
+                .withExpand("zoneRates[*].zone")
+                .execute();
+    }
+
+    public CompletableFuture<ApiHttpResponse<JsonNode>> checkShippingMethodExistence(final String key) {
         return apiRoot
                 .shippingMethods()
                 .withKey(key)
                 .head()
                 .execute();
     }
-
-
-
 }

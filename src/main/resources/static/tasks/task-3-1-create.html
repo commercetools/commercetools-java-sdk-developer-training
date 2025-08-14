@@ -26,7 +26,7 @@
             <div class="accordion-body">
               <span
                 >FETCH PRODUCTS -
-                <code>GET /products?keyword=&storeKey=</code></span
+                <code>GET /api/products/search?keyword=&storeKey=</code></span
               ><br /><br />
               <span>CREATE CART - <code>POST /carts</code></span
               ><br /><br />
@@ -92,11 +92,11 @@
           >
             <div class="accordion-body">
               <span
-                >FETCH CART - <code>GET /in-store/storeKey/carts/id</code></span
+                >FETCH CART - <code>GET /api/in-store/${storeKey}/carts/${id}</code></span
               ><br /><br />
               <span
                 >UPDATE CART -
-                <code>POST /in-store/storeKey/carts/id</code></span
+                <code>POST /api/in-store/${storeKey}/carts/${id}</code></span
               ><br /><br />
               <div class="d-flex gap-3">
                 <button class="btn btn-primary" onclick="getCart()">
@@ -187,7 +187,7 @@
     if (storeKey) params.set('storeKey', storeKey);
     if (includeFacets) params.set('facets', 'true');
 
-    const url = `/api/products?${params.toString()}`;
+    const url = `/api/products/search?${params.toString()}`;
 
     fetch(url)
       .then(handleResponse)
@@ -238,11 +238,10 @@
                   if (currency) formData['currency'] = currency;
                   if (country) formData['country'] = country;
 
-                  let url = `/api/in-store/${storeKey}/carts`;
+                  let url = `/api/in-store/${storeKey}/carts/`;
 
                   if (cartId) {
-                    //formData.cartId = cartId;
-                    url += `/${cartId}/lineitems`;
+                    url += `${cartId}/lineitems`;
                   }
 
                   fetch(url, {

@@ -61,7 +61,7 @@
 
 <script>
   async function fetchStores() {
-    const url = '/api/stores';
+    const url = '/api/project-settings/stores';
     const stores = await fetch(url)
       .then(handleResponse)
       .then((response) => response.results);

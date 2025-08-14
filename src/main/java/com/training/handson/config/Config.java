@@ -58,11 +58,6 @@ public class Config {
     }
 
     @Bean
-    public String storeKey() {
-        return storeKey;
-    }
-
-    @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }

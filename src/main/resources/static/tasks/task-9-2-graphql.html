@@ -28,7 +28,7 @@
                 >GET ORDERS -
                 <code
                   >GET
-                  /in-store/{storeKey}/graphql/orders?email={customerEmail}</code
+                  /api/graphql/orders?email={email}</code
                 ></span
               ><br /><br />
               <div class="mb-3">
@@ -76,7 +76,7 @@
     jsonResponseDiv.textContent = '';
 
     if (email) {
-      let url = `/api/in-store/${storeKey}/graphql/orders?email=${email}`;
+      let url = `/api/graphql/orders?email=${email}`;
 
       fetch(url)
         .then(handleResponse)

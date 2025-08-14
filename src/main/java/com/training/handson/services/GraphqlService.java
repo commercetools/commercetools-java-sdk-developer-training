@@ -10,6 +10,7 @@ import io.vrap.rmf.base.client.ApiHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -18,7 +19,8 @@ public class GraphqlService {
     @Autowired
     private ProjectApiRoot apiRoot;
 
-    public CompletableFuture<ApiHttpResponse<GraphQLResponse<OrderQueryResult>>> getOrderSummaryByEmail(final String customerEmail) {
+    public CompletableFuture<ApiHttpResponse<GraphQLResponse<OrderQueryResult>>> getOrdersByEmail(
+            final String customerEmail) {
 
         String query = "query($where:String!)  {\n" +
                 "  orders(where: $where) {\n" +

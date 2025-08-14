@@ -26,7 +26,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>GET /shipping-methods/</code></span>
+                <span><code>GET /api/shipping-methods/</code></span>
                 <button class="btn btn-primary" onclick="getShippingMethods()">
                   Get Shipping Methods
                 </button>
@@ -56,7 +56,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>GET /shipping-methods/key?</code></span>
+                <span><code>GET /api/shipping-methods/${key}</code></span>
                 <div>
                   <input
                     type="text"
@@ -94,7 +94,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>GET /shipping-methods?countryCode</code></span>
+                <span><code>GET /api/shipping-methods/matching-location?countryCode</code></span>
                 <div>
                   <input
                     type="text"
@@ -134,7 +134,7 @@
           >
             <div class="accordion-body">
               <div class="d-flex justify-content-between">
-                <span><code>HEAD /shipping-methods/key?</code></span>
+                <span><code>HEAD /api/shipping-methods/${key}</code></span>
                 <div>
                   <input
                     type="text"
@@ -299,7 +299,7 @@
       resultsDiv.innerHTML = 'Enter a country to get shipping options.';
       return;
     } else {
-      const url = `/api/shipping-methods?countryCode=${countryCode}`;
+      const url = `/api/shipping-methods/matching-location?countryCode=${countryCode}`;
       fetch(url)
         .then(handleResponse)
         .then((shippingMethods) => {

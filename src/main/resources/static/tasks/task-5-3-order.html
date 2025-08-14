@@ -25,14 +25,14 @@
             data-bs-parent="#cartAccordion"
           >
             <div class="accordion-body">
-              <span>GET CART - <code>GET /carts/id</code></span
+              <span>GET CART - <code>GET /api/in-store/${storeKey}/carts/${id}</code></span
               ><br /><br />
               <div class="d-flex mb-3">
                 <button class="btn btn-primary" onclick="showCartSummary()">
                   Review Cart</button
                 ><br />
               </div>
-              <span>CREATE ORDER - <code>POST /orders</code></span
+              <span>CREATE ORDER - <code>POST /api/in-store/${storeKey}/orders/</code></span
               ><br /><br />
               <div class="d-flex mb-3">
                 <button class="btn btn-primary" onclick="createOrder()">
@@ -83,7 +83,7 @@
 
     const storeKey = localStorage.getItem('store');
 
-    fetch(`/api/in-store/${storeKey}/orders`, {
+    fetch(`/api/in-store/${storeKey}/orders/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

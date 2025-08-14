@@ -23,7 +23,7 @@
             data-bs-parent="#signupAccordion"
           >
             <div class="accordion-body">
-              <span>CUSTOMER SIGNUP - <code>POST /customers</code></span
+              <span>CUSTOMER SIGNUP - <code>POST /api/in-store/${storeKey}/customers</code></span
               ><br /><br />
               <div>
                 <label for="customerEmail" class="form-label mb-2"
@@ -289,7 +289,7 @@
       formData.anonymousCartId = cartId;
     }
 
-    fetch(`/api/in-store/${storeKey}/customers`, {
+    fetch(`/api/in-store/${storeKey}/customers/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
