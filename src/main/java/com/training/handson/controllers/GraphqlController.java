@@ -23,8 +23,9 @@ public class GraphqlController {
 
     @GetMapping("orders")
     public CompletableFuture<ResponseEntity<GraphQLResponse<OrderQueryResult>>> getOrders(
-            @RequestParam String email) {
-        return graphqlService.getOrdersByEmail(email).thenApply(ResponseConverter::convert);
+            @RequestParam String email,
+            @RequestParam String locale) {
+        return graphqlService.getOrdersByEmail(email, locale).thenApply(ResponseConverter::convert);
     }
 
 }

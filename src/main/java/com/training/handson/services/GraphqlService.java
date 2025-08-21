@@ -19,29 +19,40 @@ public class GraphqlService {
     private ProjectApiRoot apiRoot;
 
     public CompletableFuture<ApiHttpResponse<GraphQLResponse<OrderQueryResult>>> getOrdersByEmail(
-            final String customerEmail) {
+            final String customerEmail,
+            final String locale) {
 
-        String query = "query($where:String!)  {\n" +
-                "  orders(where: $where) {\n" +
-                "    results {\n" +
-                "      customerEmail\n" +
-                "       customer {\n" +
-                "       firstName\n" +
-                "       lastName\n" +
-                "       }\n" +
-                "      lineItems {\n" +
-                "        name(locale: \"en-US\")\n" +
-                "      }\n" +
-                "      CartTotal: totalPrice {centAmount currencyCode}\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        String query = """
+            query($where:String!,$locale:Locale!) {
+              orders(where: $where) {
+                results {
+                  customerEmail
+                  customer {
+                    firstName
+                    lastName
+                  }
+                  lineItems {
+                    name(locale: $locale)
+                    totalPrice {centAmount currencyCode}
+                  }
+                  CartTotal: totalPrice {
+                    centAmount
+                    currencyCode
+                  }
+                }
+              }
+            }
+            """;
+
 
 
         // Create the GraphQL request
         GraphQLRequest<OrderQueryResult> graphQLRequest = GraphQL
                 .query(query)
-                .variables(builder -> builder.addValue("where", "customerEmail=\""+customerEmail+"\""))
+                .variables(builder -> builder
+                        .addValue("where", "customerEmail=\""+customerEmail+"\"")
+                        .addValue("locale", locale)
+                )
                 .dataMapper(GraphQLData::getOrders)
                 .build();
 
