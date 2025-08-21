@@ -72,11 +72,12 @@
     const jsonResponseDiv = document.getElementById('json-response');
 
     const storeKey = localStorage.getItem('store');
+    const locale = localStorage.getItem('locale');
 
     jsonResponseDiv.textContent = '';
 
     if (email) {
-      let url = `/api/graphql/orders?email=${email}`;
+      let url = `/api/graphql/orders?email=${email}&locale=${locale}`;
 
       fetch(url)
         .then(handleResponse)
