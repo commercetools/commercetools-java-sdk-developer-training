@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/shippingmethods")
+@RequestMapping("/api/shipping-methods/")
 public class ShippingController {
 
     private final ShippingService shippingService;
@@ -19,25 +19,25 @@ public class ShippingController {
         this.shippingService = shippingService;
     }
 
-    @GetMapping("/")
+    @GetMapping()
     public CompletableFuture<ResponseEntity<ShippingMethodPagedQueryResponse>> getShippingMethods() {
         return shippingService.getShippingMethods().thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/{key}")
+    @GetMapping("{key}")
     public CompletableFuture<ResponseEntity<ShippingMethod>> getShippingMethodByKey(
             @PathVariable String key) {
         return shippingService.getShippingMethodByKey(key).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/exists/{key}")
+    @RequestMapping(value = "{key}", method = RequestMethod.HEAD)
     public CompletableFuture<ResponseEntity<JsonNode>> checkShippingMethodExistence(@PathVariable String key) {
         return shippingService.checkShippingMethodExistence(key).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping
+    @GetMapping("matching-location")
     public CompletableFuture<ResponseEntity<ShippingMethodPagedQueryResponse>> getShippingMethods(
-            @RequestParam("countryCode") String countryCode) {
+            @RequestParam String countryCode) {
         return shippingService.getShippingMethodsByCountry(countryCode)
                 .thenApply(response -> {
                     ShippingMethodPagedQueryResponse body = response.getBody();

@@ -4,6 +4,7 @@ import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.product.ProductProjection;
 import com.commercetools.api.models.product_search.*;
 import com.commercetools.api.models.search.*;
+import com.training.handson.dto.SearchRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 @Service
 public class ProductService {
@@ -27,63 +29,35 @@ public class ProductService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<ProductPagedSearchResponse>> getProducts(
-            String keyword,
-            String storeKey,
-            Boolean includeFacets) {
-        ProductSearchRequestBuilder builder = ProductSearchRequestBuilder.of()
-                .withSort(
-                        searchSortingBuilder -> searchSortingBuilder
-                                .field("variants.prices.centAmount")
-                                .mode(SearchSortMode.MAX)
-                                .order(SearchSortOrder.ASC)
-                                .filter(SearchAndExpressionBuilder.of()
-                                        .and(
-                                                Arrays.asList(SearchExactExpressionBuilder.of().exact(
-                                                                SearchExactValueBuilder.of()
-                                                                        .field("variants.prices.currencyCode")
-                                                                        .fieldType(SearchFieldType.TEXT)
-                                                                        .value("EUR").build()
-                                                        ).build(),
-                                                        SearchExactExpressionBuilder.of().exact(
-                                                                SearchExactValueBuilder.of()
-                                                                        .field("variants.prices.country")
-                                                                        .fieldType(SearchFieldType.TEXT)
-                                                                        .value("DE").build()
-                                                        ).build()
-                                                )
-                                        ).build()
-                                )
+        public CompletableFuture<ApiHttpResponse<ProductPagedSearchResponse>> getProducts(SearchRequest searchRequest) {
+            ProductSearchRequestBuilder builder = ProductSearchRequestBuilder.of()
+                    .withSort(buildSort(searchRequest))
+                    .productProjectionParameters(productSearchProjectionParamsBuilder -> productSearchProjectionParamsBuilder
+                            .priceCurrency(searchRequest.getCurrency())
+                            .priceCountry(searchRequest.getCountry())
+                            )
+                    .markMatchingVariants(true);
 
-                )
-                .productProjectionParameters(productSearchProjectionParamsBuilder -> productSearchProjectionParamsBuilder
-                        .priceCurrency("EUR")
-                        .priceCountry("DE")
-                        )
-                .markMatchingVariants(true);
 
-        if (includeFacets != null && includeFacets){
-            builder.facets(createFacets());
-        }
-
-        if (StringUtils.isNotEmpty(keyword) || StringUtils.isNotEmpty(storeKey)) {
-
-            if (StringUtils.isNotEmpty(keyword) && StringUtils.isNotEmpty(storeKey)) {
-
-                final String storeId = getStoreId(storeKey);
-                builder.query(createSearchQuery(keyword, storeId))
-                        .productProjectionParameters(createProductProjectionParams(storeKey));
-
-            } else if (StringUtils.isNotEmpty(keyword)) {
-
-                builder.query(createFullTextQuery(keyword));
-
-            } else if (StringUtils.isNotEmpty(storeKey)) {
-                final String storeId = getStoreId(storeKey);
-                builder.query(createStoreQuery(storeId))
-                        .productProjectionParameters(createProductProjectionParams(storeKey));
+            if (searchRequest.isFacets()){
+                builder.facets(createFacets(searchRequest));
             }
-        }
+
+            boolean hasKeyword = StringUtils.isNotEmpty(searchRequest.getKeyword());
+            boolean hasStoreKey = StringUtils.isNotEmpty(searchRequest.getStoreKey());
+
+            if (hasKeyword || hasStoreKey) {
+                if (hasKeyword && hasStoreKey) {
+                    builder.query(createSearchQuery(searchRequest))
+                            .productProjectionParameters(createProductProjectionParams(searchRequest));
+                } else if (hasKeyword) {
+                    builder.query(createFullTextQuery(searchRequest));
+                } else {
+                    final String storeId = getStoreId(searchRequest.getStoreKey());
+                    builder.query(createStoreQuery(storeId))
+                        .productProjectionParameters(createProductProjectionParams(searchRequest));
+                }
+            }
 
         return apiRoot
                 .products()
@@ -92,14 +66,37 @@ public class ProductService {
                 .execute();
     }
 
-    private List<ProductSearchFacetExpression> createFacets(){
+    private Function<SearchSortingBuilder, SearchSortingBuilder> buildSort(SearchRequest request) {
+        return ssb -> ssb
+                .field("variants.prices.centAmount")
+                .mode(SearchSortMode.MIN)
+                .order(SearchSortOrder.ASC)
+                .filter(
+                        SearchAndExpressionBuilder.of().and(List.of(
+                                SearchExactExpressionBuilder.of().exact(
+                                        SearchExactValueBuilder.of()
+                                                .field("variants.prices.currencyCode")
+                                                .value(request.getCurrency())
+                                                .build()
+                                ).build(),
+                                SearchExactExpressionBuilder.of().exact(
+                                        SearchExactValueBuilder.of()
+                                                .field("variants.prices.country")
+                                                .value(request.getCountry())
+                                                .build()
+                                ).build()
+                        )).build()
+                );
+    }
+
+    private List<ProductSearchFacetExpression> createFacets(SearchRequest searchRequest){
         return Arrays.asList(ProductSearchFacetDistinctExpressionBuilder.of()
                         .distinct(
                                 productSearchFacetDistinctValueBuilder -> productSearchFacetDistinctValueBuilder
                                         .name("Color")
-                                        .field("variants.attributes.color")
-                                        .fieldType(SearchFieldType.LTEXT)
-                                        .language("en-US")
+                                        .field("variants.attributes.search-color.label")
+                                        .fieldType(SearchFieldType.LENUM)
+                                        .language(searchRequest.getLocale())
                                         .level(ProductSearchFacetCountLevelEnum.VARIANTS)
                                         .scope(ProductSearchFacetScopeEnum.ALL)
                         )
@@ -108,9 +105,9 @@ public class ProductService {
                         .distinct(
                                 productSearchFacetDistinctValueBuilder -> productSearchFacetDistinctValueBuilder
                                         .name("Finish")
-                                        .field("variants.attributes.finish")
-                                        .fieldType(SearchFieldType.LTEXT)
-                                        .language("en-US")
+                                        .field("variants.attributes.search-finish.label")
+                                        .fieldType(SearchFieldType.LENUM)
+                                        .language(searchRequest.getLocale())
                                         .level(ProductSearchFacetCountLevelEnum.VARIANTS)
                                         .scope(ProductSearchFacetScopeEnum.ALL)
                         )
@@ -122,21 +119,22 @@ public class ProductService {
         return apiRoot.stores().withKey(storeKey).get().executeBlocking().getBody().getId();
     }
 
-    private SearchQuery createSearchQuery(String keyword, String storeId) {
+    private SearchQuery createSearchQuery(SearchRequest searchRequest) {
+        final String storeId = getStoreId(searchRequest.getStoreKey());
         return SearchAndExpressionBuilder.of()
                 .and(Arrays.asList(
-                        createFullTextQuery(keyword),
+                        createFullTextQuery(searchRequest),
                         createStoreQuery(storeId)
                 ))
                 .build();
     }
 
-    private SearchQuery createFullTextQuery(String keyword) {
+    private SearchQuery createFullTextQuery(SearchRequest searchRequest) {
         return SearchFullTextExpressionBuilder.of()
                 .fullText(searchFullTextValueBuilder -> searchFullTextValueBuilder
                         .field("name")
-                        .value(keyword)
-                        .language("en-US")
+                        .value(searchRequest.getKeyword())
+                        .language(searchRequest.getLocale())
                         .mustMatch(SearchMatchType.ANY))
                 .build();
     }
@@ -150,11 +148,11 @@ public class ProductService {
                 .build();
     }
 
-    private ProductSearchProjectionParams createProductProjectionParams(String storeKey) {
+    private ProductSearchProjectionParams createProductProjectionParams(SearchRequest searchRequest) {
         return ProductSearchProjectionParamsBuilder.of()
-                .storeProjection(storeKey)
-                .priceCurrency("EUR")
-                .priceCountry("DE")
+                .storeProjection(searchRequest.getStoreKey())
+                .priceCurrency(searchRequest.getCurrency())
+                .priceCountry(searchRequest.getCountry())
                 .build();
     }
 

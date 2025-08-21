@@ -36,7 +36,7 @@ public class ImportService {
                 apiRoot
                         .productDrafts()
                         .importContainers()
-                        .withImportContainerKeyValue("my-import-container")
+                        .withImportContainerKeyValue("ndd-import-container")
                         .post(
                                  ProductDraftImportRequestBuilder.of()
                                          .resources(getProductDraftImportsFromCsv(csvFile))

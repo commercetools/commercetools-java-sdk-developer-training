@@ -31,9 +31,6 @@ public class Config {
     @Value("${ctp.projectKey}")
     private String projectKey;
 
-    @Value("${storeKey}")
-    private String storeKey;
-
 
     @Bean
     public ProjectApiRoot projectApiRoot() {
@@ -55,11 +52,6 @@ public class Config {
                 .addConcurrentModificationMiddleware(3)
                 .addCorrelationIdProvider(() -> projectKey + "/" + UUID.randomUUID())
                 .build(projectKey);
-    }
-
-    @Bean
-    public String storeKey() {
-        return storeKey;
     }
 
     @Bean

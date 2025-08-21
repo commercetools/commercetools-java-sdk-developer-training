@@ -18,12 +18,11 @@ public class OrderService {
     private ProjectApiRoot apiRoot;
 
     @Autowired
-    private String storeKey;
-
-    @Autowired
     private CustomerService customerService;
 
-    public CompletableFuture<ApiHttpResponse<Order>> getOrderById(final String orderId) {
+    public CompletableFuture<ApiHttpResponse<Order>> getOrderById(
+            final String storeKey,
+            final String orderId) {
 
             return apiRoot
                     .inStore(storeKey)
@@ -33,7 +32,9 @@ public class OrderService {
                     .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Order>> getOrderByOrderNumber(final String orderNumber) {
+    public CompletableFuture<ApiHttpResponse<Order>> getOrderByOrderNumber(
+            final String storeKey,
+            final String orderNumber) {
 
         return apiRoot
                 .inStore(storeKey)
@@ -44,6 +45,7 @@ public class OrderService {
     }
 
     public CompletableFuture<ApiHttpResponse<Order>> createOrder(
+            final String storeKey,
             final OrderRequest orderRequest) {
 
         return apiRoot
@@ -59,11 +61,11 @@ public class OrderService {
     }
 
     public CompletableFuture<ApiHttpResponse<Order>> setCustomFields(
+            final String storeKey,
+            final String orderNumber,
             final CustomFieldRequest customFieldRequest) {
 
-        final String orderNumber = customFieldRequest.getOrderNumber();
-
-        return getOrderByOrderNumber(orderNumber)
+        return getOrderByOrderNumber(storeKey, orderNumber)
                 .thenApply(ApiHttpResponse::getBody)
                 .thenComposeAsync(order -> {
                     return apiRoot
@@ -87,9 +89,10 @@ public class OrderService {
     }
 
     public CompletableFuture<ApiHttpResponse<Cart>> replicateOrderByOrderNumber(
+            final String storeKey,
             final String orderNumber) {
 
-        return getOrderByOrderNumber(orderNumber)
+        return getOrderByOrderNumber(storeKey, orderNumber)
             .thenComposeAsync(orderApiHttpResponse -> apiRoot
                 .inStore(storeKey)
                 .carts()

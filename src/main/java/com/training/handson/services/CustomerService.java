@@ -19,11 +19,9 @@ public class CustomerService {
     @Autowired
     private ProjectApiRoot apiRoot;
 
-    @Autowired
-    private String storeKey;
-
-
-    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerByKey(String customerKey) {
+    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerByKey(
+            final String storeKey,
+            final String customerKey) {
         return apiRoot
                 .inStore(storeKey)
                 .customers()
@@ -32,7 +30,9 @@ public class CustomerService {
                 .execute();
     }
 
-    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerById(String customerId) {
+    public CompletableFuture<ApiHttpResponse<Customer>> getCustomerById(
+            final String storeKey,
+            String customerId) {
         return apiRoot
                 .inStore(storeKey)
                 .customers()
@@ -43,6 +43,7 @@ public class CustomerService {
 
 
     public CompletableFuture<ApiHttpResponse<CustomerSignInResult>> createCustomer(
+            final String storeKey,
             final CustomerCreateRequest customerCreateRequest) {
 
         final String email = customerCreateRequest.getEmail();
@@ -99,6 +100,7 @@ public class CustomerService {
     }
 
     public CompletableFuture<ApiHttpResponse<CustomerSignInResult>> loginCustomer(
+            final String storeKey,
             final CustomerCreateRequest customerCreateRequest) {
 
         final String email = customerCreateRequest.getEmail();
@@ -111,11 +113,11 @@ public class CustomerService {
 
         if (StringUtils.isNotEmpty(anonymousCartId)){
                 customerSigninBuilder
+//                        .anonymousCartSignInMode(AnonymousCartSignInMode.USE_AS_NEW_ACTIVE_CUSTOMER_CART)
                         .anonymousCart(CartResourceIdentifierBuilder.of()
-                                    .id(anonymousCartId)
-                                    .build()
-                            )
-                        .anonymousCartSignInMode(AnonymousCartSignInMode.USE_AS_NEW_ACTIVE_CUSTOMER_CART);
+                                .id(anonymousCartId)
+                                .build()
+                        );
         }
 
         return apiRoot

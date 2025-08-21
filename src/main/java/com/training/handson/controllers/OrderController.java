@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/in-store/{storeKey}/orders/")
 public class OrderController {
 
     private final OrderService orderService;
@@ -19,22 +19,28 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Order>> getOrder(@PathVariable String id) {
-        return orderService.getOrderById(id).thenApply(ResponseConverter::convert);
+    @GetMapping("{id}")
+    public CompletableFuture<ResponseEntity<Order>> getOrder(
+            @PathVariable String storeKey,
+            @PathVariable String id) {
+        return orderService.getOrderById(storeKey, id).thenApply(ResponseConverter::convert);
     }
 
-    @PostMapping
+    @PostMapping()
     public CompletableFuture<ResponseEntity<Order>> createOrder(
+            @PathVariable String storeKey,
             @RequestBody OrderRequest orderRequest) {
 
-        return orderService.createOrder(orderRequest).thenApply(ResponseConverter::convert);
+        return orderService.createOrder(storeKey, orderRequest).thenApply(ResponseConverter::convert);
     }
 
-    @PostMapping("/custom-fields")
-    public CompletableFuture<ResponseEntity<Order>> createCustomFields(@RequestBody CustomFieldRequest customFieldRequest) {
+    @PostMapping("{orderNumber}/custom-fields")
+    public CompletableFuture<ResponseEntity<Order>> createCustomFields(
+            @PathVariable String storeKey,
+            @PathVariable String orderNumber,
+            @RequestBody CustomFieldRequest customFieldRequest) {
 
-            return orderService.setCustomFields(customFieldRequest).thenApply(ResponseConverter::convert);
+            return orderService.setCustomFields(storeKey, orderNumber, customFieldRequest).thenApply(ResponseConverter::convert);
 
     }
 }
