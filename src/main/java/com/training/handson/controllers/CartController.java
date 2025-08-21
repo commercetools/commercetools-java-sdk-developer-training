@@ -1,7 +1,8 @@
 package com.training.handson.controllers;
 
 import com.commercetools.api.models.cart.Cart;
-import com.training.handson.dto.AddressRequest;
+import com.commercetools.api.models.common.Address;
+import com.training.handson.dto.CartCreateRequest;
 import com.training.handson.dto.CartUpdateRequest;
 import com.training.handson.services.CartService;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api/in-store/{storeKey}/carts/")
 public class CartController {
 
     private final CartService cartService;
@@ -19,30 +20,52 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Cart>> getCart(@PathVariable String id) {
-        return cartService.getCartById(id).thenApply(ResponseConverter::convert);
+    @GetMapping("{id}")
+    public CompletableFuture<ResponseEntity<Cart>> getCart(
+            @PathVariable String storeKey,
+            @PathVariable String id) {
+        return cartService.getCartById(storeKey, id).thenApply(ResponseConverter::convert);
     }
 
-    @PostMapping
-    public CompletableFuture<ResponseEntity<Cart>> updateCart(
+    @PostMapping()
+    public CompletableFuture<ResponseEntity<Cart>> createCart(
+            @PathVariable String storeKey,
+            @RequestBody CartCreateRequest cartCreateRequest) {
+        return cartService.createCart(storeKey, cartCreateRequest).thenApply(ResponseConverter::convert);
+    }
+
+    @PostMapping("{id}/lineitems")
+    public CompletableFuture<ResponseEntity<Cart>> addLineItem(
+            @PathVariable String storeKey,
+            @PathVariable String id,
             @RequestBody CartUpdateRequest cartUpdateRequest) {
-
-        return cartService.updateCart(cartUpdateRequest).thenApply(ResponseConverter::convert);
+        return cartService.addLineItem(storeKey, id, cartUpdateRequest).thenApply(ResponseConverter::convert);
     }
 
-    @PostMapping("/discount-code")
+    @PostMapping("{id}/discount-codes")
     public CompletableFuture<ResponseEntity<Cart>> addDiscountCode(
-            @RequestBody CartUpdateRequest cartUpdateRequest) {
-
-        return cartService.addDiscountToCart(cartUpdateRequest.getCartId(), cartUpdateRequest.getCode()).thenApply(ResponseConverter::convert);
+            @PathVariable String storeKey,
+            @PathVariable String id,
+            @RequestParam String discountCode) {
+        return cartService.addDiscountCode(storeKey, id, discountCode).thenApply(ResponseConverter::convert);
     }
 
-    @PostMapping("/shipping-address")
+    @PostMapping("{id}/shipping-address")
     public CompletableFuture<ResponseEntity<Cart>> setShippingAddress(
-            @RequestBody AddressRequest addressRequest) {
+            @PathVariable String storeKey,
+            @PathVariable String id,
+            @RequestBody Address address) {
 
-            return cartService.setShippingAddress(addressRequest).thenApply(ResponseConverter::convert);
+            return cartService.setShippingAddress(storeKey, id, address).thenApply(ResponseConverter::convert);
+    }
+
+    @PostMapping("{id}/shipping-method")
+    public CompletableFuture<ResponseEntity<Cart>> setShippingMethod(
+            @PathVariable String storeKey,
+            @PathVariable String id,
+            @RequestParam String shippingMethodId) {
+
+        return cartService.setShippingMethod(storeKey, id, shippingMethodId).thenApply(ResponseConverter::convert);
     }
 
 }

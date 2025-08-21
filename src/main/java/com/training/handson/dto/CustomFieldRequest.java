@@ -2,7 +2,6 @@ package com.training.handson.dto;
 
 public class CustomFieldRequest {
 
-    private String orderNumber;
     private String instructions;
     private String time;
 
@@ -12,8 +11,4 @@ public class CustomFieldRequest {
     public String getTime() {
         return time;
     }
-    public String getOrderNumber() {
-        return orderNumber;
-    }
-
 }

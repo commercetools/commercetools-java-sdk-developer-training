@@ -18,11 +18,8 @@ public class GraphqlService {
     @Autowired
     private ProjectApiRoot apiRoot;
 
-
-    public CompletableFuture<ApiHttpResponse<GraphQLResponse<OrderQueryResult>>> getOrderSummaryByEmail(final String customerEmail) {
-
-        // TODO: Use GraphQL Explorer to build a query that returns orders for the email in the request.
-        // TODO: including customer's name
+    public CompletableFuture<ApiHttpResponse<GraphQLResponse<OrderQueryResult>>> getOrdersByEmail(
+            final String customerEmail) {
 
         String query = "query($where:String!)  {\n" +
                 "  orders(where: $where) {\n" +
@@ -40,10 +37,11 @@ public class GraphqlService {
                 "  }\n" +
                 "}";
 
+
         // Create the GraphQL request
         GraphQLRequest<OrderQueryResult> graphQLRequest = GraphQL
                 .query(query)
-                .variables(builder -> builder.addValue("where", "customerEmail=\"" +customerEmail+"\""))
+                .variables(builder -> builder.addValue("where", "customerEmail=\""+customerEmail+"\""))
                 .dataMapper(GraphQLData::getOrders)
                 .build();
 

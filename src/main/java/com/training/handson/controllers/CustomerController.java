@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/in-store/{storeKey}/customers/")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -19,28 +19,33 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @PostMapping
+    @PostMapping()
     public CompletableFuture<ResponseEntity<CustomerSignInResult>> createCustomer(
+            @PathVariable String storeKey,
             @RequestBody CustomerCreateRequest customerCreateRequest) {
 
-        return customerService.createCustomer(customerCreateRequest).thenApply(ResponseConverter::convert);
+        return customerService.createCustomer(storeKey, customerCreateRequest).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/{id}")
-    public CompletableFuture<ResponseEntity<Customer>> getCustomerById(@PathVariable String id) {
-        return customerService.getCustomerById(id).thenApply(ResponseConverter::convert);
+    @GetMapping("{id}")
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerById(
+            @PathVariable String storeKey,
+            @PathVariable String id) {
+        return customerService.getCustomerById(storeKey, id).thenApply(ResponseConverter::convert);
     }
 
-    @GetMapping("/key={key}")
+    @GetMapping("key={key}")
     public CompletableFuture<ResponseEntity<Customer>> getCustomerByKey(
+            @PathVariable String storeKey,
             @PathVariable String key) {
-        return customerService.getCustomerByKey(key).thenApply(ResponseConverter::convert);
+        return customerService.getCustomerByKey(storeKey, key).thenApply(ResponseConverter::convert);
     }
 
     @PostMapping("/login")
     public CompletableFuture<ResponseEntity<CustomerSignInResult>> loginCustomer(
+            @PathVariable String storeKey,
             @RequestBody CustomerCreateRequest customerCreateRequest) {
 
-        return customerService.loginCustomer(customerCreateRequest).thenApply(ResponseConverter::convert);
+        return customerService.loginCustomer(storeKey, customerCreateRequest).thenApply(ResponseConverter::convert);
     }
 }
