@@ -1,7 +1,7 @@
 package com.training.handson.controllers;
 
 import com.commercetools.api.models.product.ProductProjection;
-import com.commercetools.api.models.product_search.ProductPagedSearchResponse;
+import com.commercetools.graphql.api.GraphQLResponse;
 import com.training.handson.dto.SearchRequest;
 import com.training.handson.services.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class ProductController {
     }
 
     @GetMapping("search")
-    public CompletableFuture<ResponseEntity<ProductPagedSearchResponse>> getProducts(
+    public CompletableFuture<ResponseEntity<GraphQLResponse<Object>>> getProducts(
             @ModelAttribute SearchRequest searchRequest) {
         return productService.getProducts(searchRequest).thenApply(ResponseConverter::convert);
     }
