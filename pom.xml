@@ -72,6 +72,13 @@
 			<artifactId>commercetools-graphql-api</artifactId>
 			<version>${commercetools.version}</version>
 		</dependency>
+		<!-- tools.jackson:jackson-databind (Jackson 3, pulled in transitively by commercetools SDK 20.x)
+           requires jackson-annotations 2.21+; Spring Boot's parent pins it to an older 2.x line. -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.21</version>
+		</dependency>
 
 		</dependencies>
 
