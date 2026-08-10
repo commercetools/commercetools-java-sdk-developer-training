@@ -193,40 +193,47 @@
       console.log(url);
       fetch(url)
         .then(handleResponse)
-        .then((products) => {
+        .then((response) => {
           //display the JSON Response
-          jsonResponseDiv.textContent = JSON.stringify(products, null, 2);
+          jsonResponseDiv.textContent = JSON.stringify(response, null, 2);
 
           // display the results
-          console.log(products);
-          if (products.results && products.results.length > 0) {
-            console.log(products.results);
-            products.results.forEach((result) => {
-              if (result.productProjection) {
+          const searchResult = response.data?.productsSearch;
+          console.log(searchResult);
+          if (searchResult?.results && searchResult.results.length > 0) {
+            console.log(searchResult.results);
+            searchResult.results.forEach((result) => {
+              const current = result.product?.masterData?.current;
+              if (current) {
+                const variant = current.masterVariant;
+                const price = variant.price;
+                const attributes = {};
+                (variant.attributesRaw || []).forEach((attr) => {
+                  attributes[attr.name] = attr.value;
+                });
+                const colorLabel =
+                  attributes['color-label']?.[locale] ??
+                  Object.values(attributes['color-label'] ?? {})[0];
+                const finishLabel =
+                  attributes['finish-label']?.[locale] ??
+                  Object.values(attributes['finish-label'] ?? {})[0];
+
                 const productDiv = document.createElement('div');
                 productDiv.classList.add('col-md-12', 'mb-5');
 
                 productDiv.innerHTML = `
                                 <div class="card">
-                                    <img src="${result.productProjection.masterVariant.images[0].url}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="${result.productProjection.name[Object.keys(result.productProjection.name)[0] ?? locale]}">
+                                    <img src="${variant.images[0]?.url}" class="card-img-top img-fluid" style="height: 200px; object-fit: cover;" alt="${current.name}">
                                     <div class="card-body">
-                                        <h5 class="card-title">${result.productProjection.name[Object.keys(result.productProjection.name)[0] ?? locale]}</h5>
-                                        ${result.productProjection.masterVariant.sku ? `<p class="card-text"><strong>SKU:</strong> ${result.productProjection.masterVariant.sku}</p>` : ''}
-                                        ${result.productProjection.masterVariant.price ? `<p class="card-text"><strong>Price:</strong> ${result.productProjection.masterVariant.price.value.currencyCode} ${(result.productProjection.masterVariant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
-
-                                        ${result.productProjection.variants.length > 0 ? '<h4>Variants:</h4>' : ''}
-                                        ${result.productProjection.variants
-                                          .map((variant) => {
-                                            return `
-                                                <div>
-                                                    ${variant.sku ? `<p><strong>SKU: ${variant.sku}</strong></p>` : ''}
-                                                    ${variant.images[0].url ? `<img src="${variant.images[0].url}" class="img-fluid d-block mx-auto mb-2" style="width: 100px; height: 100px;" />` : ''}
-                                                    ${variant.price ? `<p class="text-center"><strong>Price:</strong> ${variant.price.value.currencyCode} ${(variant.price.value.centAmount / 100).toFixed(2)}</p>` : ''}
-
-                                                </div>
-                                            `;
-                                          })
-                                          .join('')}
+                                        <h5 class="card-title">${current.name}</h5>
+                                        ${variant.sku ? `<p class="card-text"><strong>SKU:</strong> ${variant.sku}</p>` : ''}
+                                        ${price ? `<p class="card-text"><strong>Price:</strong> ${
+                                          price.discounted
+                                            ? `<s>${price.value.currencyCode} ${(price.value.centAmount / 100).toFixed(2)}</s> ${price.discounted.value.currencyCode} ${(price.discounted.value.centAmount / 100).toFixed(2)}`
+                                            : `${price.value.currencyCode} ${(price.value.centAmount / 100).toFixed(2)}`
+                                        }</p>` : ''}
+                                        ${colorLabel ? `<p class="card-text"><strong>Color:</strong> ${colorLabel}</p>` : ''}
+                                        ${finishLabel ? `<p class="card-text"><strong>Finish:</strong> ${finishLabel}</p>` : ''}
                                     </div>
                                 </div>
                             `;
@@ -237,8 +244,8 @@
           } else {
             resultsDiv.innerHTML = 'No products found.';
           }
-          if (products.facets && products.facets.length > 0) {
-            products.facets.forEach((facet) => {
+          if (searchResult?.facets && searchResult.facets.length > 0) {
+            searchResult.facets.forEach((facet) => {
               const facetDiv = document.createElement('div');
               facetDiv.innerHTML = `<br/><h3>${facet.name}</h3><br/>`;
               if (facet.buckets && facet.buckets.length > 0) {
