@@ -2,7 +2,7 @@ package com.training.handson.services;
 
 import com.commercetools.api.client.ProjectApiRoot;
 import com.commercetools.api.models.cart.*;
-import com.commercetools.api.models.common.Address;
+import com.training.handson.dto.AddressRequest;
 import com.training.handson.dto.CartCreateRequest;
 import com.training.handson.dto.CartUpdateRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
@@ -104,7 +104,7 @@ public class CartService {
     public CompletableFuture<ApiHttpResponse<Cart>> setShippingAddress(
             final String storeKey,
             final String cartId,
-            final Address address) {
+            final AddressRequest address) {
 
         return this.getCartById(storeKey, cartId)
             .thenApply(ApiHttpResponse::getBody)
@@ -118,7 +118,15 @@ public class CartService {
                             .version(cart.getVersion())
                             .plusActions(cartUpdateActionBuilder -> cartUpdateActionBuilder
                                     .setShippingAddressBuilder()
-                                    .address(address))
+                                    .address(addressBuilder -> addressBuilder
+                                            .firstName(address.getFirstName())
+                                            .lastName(address.getLastName())
+                                            .streetNumber(address.getStreetNumber())
+                                            .streetName(address.getStreetName())
+                                            .city(address.getCity())
+                                            .region(address.getState())
+                                            .country(address.getCountry())
+                                            .email(address.getEmail())))
                             .plusActions(cartUpdateActionBuilder -> cartUpdateActionBuilder
                                     .setCustomerEmailBuilder().email(address.getEmail()))
                     )

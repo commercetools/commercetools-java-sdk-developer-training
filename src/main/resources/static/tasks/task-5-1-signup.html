@@ -119,14 +119,14 @@
                 </div>
                 <div class="d-flex flex-row">
                   <div class="col-md-4 mb-2">
-                    <label for="region" class="form-label">State</label>
+                    <label for="state" class="form-label">State</label>
                   </div>
                   <div class="col-md-8 mb-2">
                     <input
                       type="text"
                       class="form-control"
-                      id="region"
-                      name="region"
+                      id="state"
+                      name="state"
                       required
                     />
                   </div>
@@ -265,17 +265,24 @@
     const jsonResponseDiv = document.getElementById('json-response');
     jsonResponseDiv.textContent = '';
 
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+
     const formData = {
       email: document.getElementById('customerEmail').value,
       password: document.getElementById('customerPassword').value,
       key: document.getElementById('customerKey').value,
-      firstName: document.getElementById('firstName').value,
-      lastName: document.getElementById('lastName').value,
-      streetNumber: document.getElementById('streetNumber').value,
-      streetName: document.getElementById('streetName').value,
-      city: document.getElementById('city').value,
-      region: document.getElementById('region').value,
-      country: document.getElementById('country').value,
+      firstName: firstName,
+      lastName: lastName,
+      address: {
+        firstName: firstName,
+        lastName: lastName,
+        streetNumber: document.getElementById('streetNumber').value,
+        streetName: document.getElementById('streetName').value,
+        city: document.getElementById('city').value,
+        state: document.getElementById('state').value,
+        country: document.getElementById('country').value,
+      },
       defaultShippingAddress: document.getElementById(
         'setDefaultShippingAddress',
       ).checked,

@@ -1,7 +1,7 @@
 package com.training.handson.controllers;
 
 import com.commercetools.api.models.cart.Cart;
-import com.commercetools.api.models.common.Address;
+import com.training.handson.dto.AddressRequest;
 import com.training.handson.dto.CartCreateRequest;
 import com.training.handson.dto.CartUpdateRequest;
 import com.training.handson.services.CartService;
@@ -54,7 +54,7 @@ public class CartController {
     public CompletableFuture<ResponseEntity<Cart>> setShippingAddress(
             @PathVariable String storeKey,
             @PathVariable String id,
-            @RequestBody Address address) {
+            @RequestBody AddressRequest address) {
 
             return cartService.setShippingAddress(storeKey, id, address).thenApply(ResponseConverter::convert);
     }
