@@ -1,10 +1,9 @@
 package com.training.handson.services;
 
 import com.commercetools.api.client.ProjectApiRoot;
-import com.commercetools.api.models.cart.Cart;
-import com.commercetools.api.models.cart.CartAddDiscountCodeActionBuilder;
-import com.commercetools.api.models.cart.CartUpdateAction;
-import com.commercetools.api.models.common.Address;
+import com.commercetools.api.models.cart.*;
+import com.commercetools.api.models.channel.ChannelResourceIdentifierBuilder;
+import com.training.handson.dto.AddressRequest;
 import com.training.handson.dto.CartCreateRequest;
 import com.training.handson.dto.CartUpdateRequest;
 import io.vrap.rmf.base.client.ApiHttpResponse;
@@ -81,7 +80,7 @@ public class CartService {
     public CompletableFuture<ApiHttpResponse<Cart>> setShippingAddress(
             final String storeKey,
             final String cartId,
-            final Address address) {
+            final AddressRequest address) {
 
         // TODO: Set Shipping address on the cart
         // TODO: Set email on the cart

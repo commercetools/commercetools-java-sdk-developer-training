@@ -56,7 +56,7 @@ public class ExtensionsService {
         // Create the custom type asynchronously
         return apiRoot
                 .types()
-            .post(
+                .post(
                 typeDraftBuilder -> typeDraftBuilder
                     .key("ct-delivery-instructions")
                     .name(lsb -> lsb.values(nameForType))

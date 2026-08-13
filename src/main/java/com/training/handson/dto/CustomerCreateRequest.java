@@ -9,40 +9,51 @@ public class CustomerCreateRequest {
     private String lastName;
     private String anonymousCartId;
 
-    private String streetNumber;
-    private String streetName;
-    private String city;
-    private String region;
-    private String country;
+    private AddressRequest address;
     private Boolean defaultShippingAddress;
     private Boolean defaultBillingAddress;
 
     public String getEmail() {
         return email;
     }
+    public void setEmail(String email) {
+        this.email = email;
+    }
     public String getPassword() {
         return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
     public String getKey() {
         return key;
     }
+    public void setKey(String key) {
+        this.key = key;
+    }
     public String getFirstName() {
         return firstName;
+    }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
     public String getLastName() {
         return lastName;
     }
-    public String getCountry() {
-        return country;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     public String getAnonymousCartId() {
         return anonymousCartId;
     }
+    public void setAnonymousCartId(String anonymousCartId) {
+        this.anonymousCartId = anonymousCartId;
+    }
     public Boolean isDefaultShippingAddress() {return defaultShippingAddress;}
-    public String getRegion() {return region;}
-    public String getCity() {return city;}
+    public void setDefaultShippingAddress(Boolean defaultShippingAddress) {this.defaultShippingAddress = defaultShippingAddress;}
     public Boolean isDefaultBillingAddress() {return defaultBillingAddress;}
-    public String getStreetName() {return streetName;}
-    public String getStreetNumber() {return streetNumber;}
+    public void setDefaultBillingAddress(Boolean defaultBillingAddress) {this.defaultBillingAddress = defaultBillingAddress;}
+    public AddressRequest getAddress() {return address;}
+    public void setAddress(AddressRequest address) {this.address = address;}
 
 }
